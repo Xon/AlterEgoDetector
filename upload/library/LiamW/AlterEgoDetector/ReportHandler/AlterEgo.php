@@ -52,8 +52,11 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
 
     public function getContentTitle(array $report, array $contentInfo)
     {
+        $username1 = @$report['extraContent'][0][0]['username'];
+        $username2 = @$report['extraContent'][0][1]['username'];
         return new XenForo_Phrase('aed_thread_subject', array(
-            'username' => @$report['extraContent'][0][0]['username']
+            'username1' => $username1,
+            'username2' => $username2,
         ));
     }
 

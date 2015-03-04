@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.4.5" version_id="10405" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Addon" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Addon" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.4.6" version_id="10406" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Addon" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Addon" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -159,7 +159,7 @@
     <phrase title="aed_minutes" version_id="10306" version_string="1.3.6"><![CDATA[minutes]]></phrase>
     <phrase title="aed_old" version_id="10306" version_string="1.3.6"><![CDATA[old]]></phrase>
     <phrase title="aed_thread_message" version_id="10306" version_string="1.3.6"><![CDATA[It looks like [url="{userLink2}"]{username2}[/url] is an alter ego of [url="{userLink1}"]{username1}[/url]...]]></phrase>
-    <phrase title="aed_thread_subject" version_id="1" version_string="1.0"><![CDATA[{username} is an alter ego!]]></phrase>
+    <phrase title="aed_thread_subject" version_id="10406" version_string="1.4.6"><![CDATA[{username1} & {username2} are alter egos!]]></phrase>
     <phrase title="liam_aed_check_ips_up_to" version_id="10306" version_string="1.3.6"><![CDATA[Check IP's up to]]></phrase>
     <phrase title="liam_aed_ipcheck" version_id="10306" version_string="1.3.6"><![CDATA[Check IP's]]></phrase>
     <phrase title="option_aedcheckbanned" version_id="10201" version_string="1.2.1"><![CDATA[Check Banned Users]]></phrase>
