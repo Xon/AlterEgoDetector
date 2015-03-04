@@ -17,6 +17,7 @@
  */
 abstract class LiamW_AlterEgoDetector_Addon
 {
+    const AddonNameSpace = 'LiamW_AlterEgoDetector';
 
     public static function install($installedAddon)
     {
@@ -66,15 +67,7 @@ abstract class LiamW_AlterEgoDetector_Addon
 
     public static function extendClass($class, array &$extend)
     {
-        switch ($class)
-        {
-            case 'XenForo_ControllerPublic_Login':
-                $extend[] = 'LiamW_AlterEgoDetector_Extend_ControllerPublic_Login';
-                break;
-            case 'XenForo_Model_SpamPrevention':
-                $extend[] = 'LiamW_AlterEgoDetector_Extend_Model_SpamPrevention';
-                break;
-        }
+        $extend[] = self::AddonNameSpace . '_' . $class;
     }
 
     // This is a stub to allow the upgrade to go smoothly

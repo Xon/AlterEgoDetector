@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class LiamW_AlterEgoDetector_Extend_Model_SpamPrevention extends XFCP_LiamW_AlterEgoDetector_Extend_Model_SpamPrevention
+class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention
 {
     public function logScore($phrase, $score, $data = array())
     {
@@ -338,7 +338,7 @@ class LiamW_AlterEgoDetector_Extend_Model_SpamPrevention extends XFCP_LiamW_Alte
 
 if (false)
 {
-    class XFCP_LiamW_AlterEgoDetector_Extend_Model_SpamPrevention extends XenForo_Model_SpamPrevention
+    class XFCP_LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XenForo_Model_SpamPrevention
     {
     }
 }

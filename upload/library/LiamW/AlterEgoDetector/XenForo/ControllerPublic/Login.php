@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-class LiamW_AlterEgoDetector_Extend_ControllerPublic_Login extends XFCP_LiamW_AlterEgoDetector_Extend_ControllerPublic_Login
+class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login
 {
     public function actionLogin()
     {
         $parent = parent::actionLogin();
 
-        /** @var LiamW_AlterEgoDetector_Extend_Model_SpamPrevention $spamModel */
+        /** @var LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention $spamModel */
         $spamModel = $this->_getSpamModel();
         $userModel = $this->_getUserModel();
 
@@ -144,7 +144,7 @@ class LiamW_AlterEgoDetector_Extend_ControllerPublic_Login extends XFCP_LiamW_Al
 
 if (false)
 {
-    class XFCP_LiamW_AlterEgoDetector_Extend_ControllerPublic_Login extends XenForo_ControllerPublic_Login
+    class XFCP_LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XenForo_ControllerPublic_Login
     {
     }
 }
