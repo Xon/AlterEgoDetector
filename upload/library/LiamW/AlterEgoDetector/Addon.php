@@ -71,7 +71,8 @@ abstract class LiamW_AlterEgoDetector_Addon
     }
 
     // This is a stub to allow the upgrade to go smoothly
-    public static function initDependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
-    {
-    }
+    public static function initDependencies(XenForo_Dependencies_Abstract $dependencies, array $data){}
+    public static function extendLoginController($class, array &$extend){}
+    public static function extendRegisterController($class, array &$extend){}
+    public static function extendUserDataWriter($class, array &$extend){}
 }
