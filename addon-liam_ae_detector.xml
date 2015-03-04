@@ -39,10 +39,10 @@
       <relation group_id="aed_options" display_order="102"/>
     </option>
     <option option_id="aedcheckips" edit_format="template" data_type="array" can_backup="1">
-      <default_value></default_value>
+      <default_value>15</default_value>
       <edit_format_params>liam_aed_option_ipcheck</edit_format_params>
       <sub_options>checkIp
-                minTime</sub_options>
+minTime</sub_options>
       <relation group_id="aed_options" display_order="103"/>
     </option>
     <option option_id="aedcreatethread" edit_format="onoff" data_type="boolean" can_backup="1">
