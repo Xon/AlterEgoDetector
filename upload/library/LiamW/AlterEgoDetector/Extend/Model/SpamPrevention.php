@@ -226,7 +226,7 @@ class LiamW_AlterEgoDetector_Extend_Model_SpamPrevention extends XFCP_LiamW_Alte
             }
         }
 
-        if ($options->aedreport)
+        if ($options->aedreport && $options->liam_aed_reporter)
         {
             $this->_debug('reporting initialised.');
 
@@ -237,9 +237,13 @@ class LiamW_AlterEgoDetector_Extend_Model_SpamPrevention extends XFCP_LiamW_Alte
 
             // ensure alter-ego detection doesn't nag
             $makeReport = true;
+            $report = false;
+            // do not allow reporting of the alter ego reporter id
+            if ($reporterId != $originalUser['user_id'] && $reporterId != $alterEgoUser['user_id'])
+            {
+                $report = $reportModel->getReportByContent('alterego', $originalUser['user_id'] . "&" . $alterEgoUser['user_id']);
+            }
 
-            $report = $reportModel->getReportByContent('alterego',
-                $originalUser['user_id'] . "&" . $alterEgoUser['user_id']);
             if ($report)
             {
                 $sendDuplicate = $options->aedreport_senddupe;
