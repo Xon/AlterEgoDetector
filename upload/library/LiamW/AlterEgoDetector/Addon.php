@@ -27,20 +27,38 @@ abstract class LiamW_AlterEgoDetector_Addon
 
         $versionId = is_array($installedAddon) ? $installedAddon['version_id'] : 0;
 
-        $contentTypeInstaller = LiamW_Shared_DatabaseSchema_Abstract2::create('LiamW_AlterEgoDetector_DatabaseSchema_ContentType');
-        $contentTypeInstaller->install($versionId);
-        $contentTypeFieldInstaller = LiamW_Shared_DatabaseSchema_Abstract2::create('LiamW_AlterEgoDetector_DatabaseSchema_ContentTypeField');
-        $contentTypeFieldInstaller->install($versionId);
+        $db = XenForo_Application::getDb();
+
+        $db->query("
+            INSERT IGNORE INTO xf_content_type
+                (content_type, addon_id, fields)
+            VALUES
+                ('alterego', 'liam_ae_detector', '')
+        ");
+
+        $db->query("
+            INSERT IGNORE INTO xf_content_type_field
+                (content_type, field_name, field_value)
+            VALUES
+                ('alterego', 'report_handler_class', 'LiamW_AlterEgoDetector_ReportHandler_AlterEgo')
+        ");
 
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
     }
 
     public static function uninstall()
     {
-        $contentTypeInstaller = LiamW_Shared_DatabaseSchema_Abstract2::create('LiamW_AlterEgoDetector_DatabaseSchema_ContentType');
-        $contentTypeInstaller->uninstall();
-        $contentTypeFieldInstaller = LiamW_Shared_DatabaseSchema_Abstract2::create('LiamW_AlterEgoDetector_DatabaseSchema_ContentTypeField');
-        $contentTypeFieldInstaller->uninstall();
+        $db = XenForo_Application::getDb();
+        
+        $db->query("
+            DELETE FROM xf_content_type
+            WHERE xf_content_type.addon_id = 'liam_ae_detector'
+        ");
+
+        $db->query("
+            DELETE FROM xf_content_type_field
+            WHERE xf_content_type_field.field_value = 'LiamW_AlterEgoDetector_ReportHandler_AlterEgo'
+        ");
 
         // update cache
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
