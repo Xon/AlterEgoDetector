@@ -21,10 +21,10 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
     public function getReportDetailsFromContent(array $content)
     {
         $user_id1 = isset($content[0]['user_id']) ? $content[0]['user_id'] : 0;
-        $user_id2 = isset($content[1]['user_id']) ? $content[1]['user_id'] : 0;
+        //$user_id2 = isset($content[1]['user_id']) ? $content[1]['user_id'] : 0;
 
         return array(
-            $user_id1 . "&" . $user_id2,
+            $user_id1,
             $user_id1,
             array(
                 $content
@@ -52,12 +52,21 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
 
     public function getContentTitle(array $report, array $contentInfo)
     {
+        $AE_count = count($report['extraContent'][0]) - 1;
         $username1 = @$report['extraContent'][0][0]['username'];
-        $username2 = @$report['extraContent'][0][1]['username'];
-        return new XenForo_Phrase('aed_thread_subject', array(
-            'username1' => $username1,
-            'username2' => $username2,
-        ));
+        if ($AE_count <= 1)
+        {
+            $username2 = @$report['extraContent'][0][1]['username'];
+            return new XenForo_Phrase('aed_thread_subject', array(
+                'username1' => $username1,
+                'username2' => $username2,
+            ));
+        }
+        else
+            return new XenForo_Phrase('aed_thread_subject_count', array(
+                'username' => $username1,
+                'count' => $AE_count,
+            ));
     }
 
 }
