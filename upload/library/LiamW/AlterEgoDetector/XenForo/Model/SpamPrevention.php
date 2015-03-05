@@ -151,7 +151,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $userLink2 = XenForo_Link::buildPublicLink('full:members', $alterEgoUser);
 
         $title = new XenForo_Phrase('aed_thread_subject', array(
-            'username' => $alterEgoUsername
+            'username1' => $originalUsername,
+            'username2' => $alterEgoUsername,
         ));
         $message = new XenForo_Phrase('aed_thread_message', array(
             'username1' => $originalUsername,
