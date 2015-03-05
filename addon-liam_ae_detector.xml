@@ -104,13 +104,13 @@ minTime</sub_options>
     <option option_id="aedreport_senddupe" edit_format="checkbox" data_type="array" can_backup="1">
       <default_value></default_value>
       <edit_format_params>open=Open
-                assigned=Assigned
-                resolved=Resolved
-                rejected=Rejected</edit_format_params>
+assigned=Assigned
+resolved=Resolved
+rejected=Rejected</edit_format_params>
       <sub_options>open
-                assigned
-                resolved
-                rejected</sub_options>
+assigned
+resolved
+rejected</sub_options>
       <relation group_id="aed_options" display_order="403"/>
     </option>
     <option option_id="aedsendpm" edit_format="onoff" data_type="boolean" can_backup="1">
