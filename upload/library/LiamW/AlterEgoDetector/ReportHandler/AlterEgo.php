@@ -50,8 +50,33 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
         return null;
     }
 
+    public function getContentForThread(array $report, array $contentInfo)
+    {
+        if (!isset($report['extraContent']))
+        {
+            $report['extraContent'] = $this->prepareExtraContent($contentInfo);
+        }
+        $username1 = $report['extraContent'][0][0]['username'];
+        $username2 = $report['extraContent'][0][1]['username'];
+        $userLink1 = XenForo_Link::buildPublicLink('full:members', $report['extraContent'][0][0]);
+        $userLink2 = XenForo_Link::buildPublicLink('full:members', $report['extraContent'][0][1]);
+
+        $content = parent::getContentForThread($report, $contentInfo);
+        $content['message'] = new XenForo_Phrase('aed_thread_message', array(
+            'username1' => $username1,
+            'username2' => $username2,
+            'userLink1' => $userLink1,
+            'userLink2' => $userLink2
+        ));
+        return $content;
+    }
+
     public function getContentTitle(array $report, array $contentInfo)
     {
+        if (!isset($report['extraContent']))
+        {
+            $report['extraContent'] = $this->prepareExtraContent($contentInfo);
+        }
         $AE_count = count($report['extraContent'][0]) - 1;
         $username1 = @$report['extraContent'][0][0]['username'];
         if ($AE_count <= 1)
