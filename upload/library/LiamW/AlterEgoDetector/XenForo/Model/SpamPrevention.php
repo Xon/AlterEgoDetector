@@ -163,54 +163,67 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
         if ($options->aedcreatethread)
         {
-            /* @var $threadDw XenForo_DataWriter_Discussion_Thread */
-            $threadDw = XenForo_DataWriter::create('XenForo_DataWriter_Discussion_Thread');
+            try
+            {
 
-            $this->_debug('Initialised Thread DataWriter');
 
-            $forumId = $options->aedforumid;
-            $userId = $options->aeduserid;
-            $username = $options->aedusername;
+                $forumId = $options->aedforumid;
+                $userId = $options->aeduserid;
+                $username = $options->aedusername;
+                if (empty($forumId) || empty($userId) || empty($username))
+                {
+                    throw new Exception("Alter Ego Detector - Create Thread is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername");
+                }
 
-            $threadDw->bulkSet(array(
-                'user_id' => $userId,
-                'node_id' => $forumId,
-                'title' => $title,
-                'username' => $username
-            ));
+                $this->_debug('Initialised Thread DataWriter');
+                /* @var $threadDw XenForo_DataWriter_Discussion_Thread */
+                $threadDw = XenForo_DataWriter::create('XenForo_DataWriter_Discussion_Thread');
+                $threadDw->bulkSet(array(
+                    'user_id' => $userId,
+                    'node_id' => $forumId,
+                    'title' => $title,
+                    'username' => $username
+                ));
 
-            $firstPostDw = $threadDw->getFirstMessageDw();
-            $firstPostDw->set('message', $message);
+                $firstPostDw = $threadDw->getFirstMessageDw();
+                $firstPostDw->set('message', $message);
 
-            $this->_debug('Line before thread datawriter save');
-            $threadDw->save();
-            $this->_debug('Thread datawriter saved');
+                $this->_debug('Line before thread datawriter save');
+                $threadDw->save();
+                $this->_debug('Thread datawriter saved');
+            }
+            catch(\Exception $e)
+            {
+                XenForo_Error::logException($e);
+            }
         }
 
         if ($options->aedsendpm)
         {
-            /* @var $conversationDw XenForo_DataWriter_ConversationMaster */
-            $conversationDw = XenForo_DataWriter::create('XenForo_DataWriter_ConversationMaster');
-
-            $this->_debug('Conversation datawriter initialised.');
-
-            $conversationStarterId = $options->aedpmsenderid;
-            $conversationStarterUsername = $options->aedpmusername;
-            $conversationRecipientsOption = str_replace(array(
-                "/r",
-                "/r/n"
-            ), "/n", $options->aedpmrecipients);
-            $conversationRecipients = explode("/n", $conversationRecipientsOption);
-
-            $starterArray = $userModel->getFullUserById($conversationStarterId, array(
-                'join' => XenForo_Model_User::FETCH_USER_FULL | XenForo_Model_User::FETCH_USER_PERMISSIONS
-            ));
-            $starterArray['permissions'] = XenForo_Permission::unserializePermissions($starterArray['global_permission_cache']);
-
-            if ($starterArray)
+            try
             {
-                $conversationDw->setExtraData(XenForo_DataWriter_ConversationMaster::DATA_ACTION_USER,
-                    $starterArray);
+                $conversationStarterId = $options->aedpmsenderid;
+                $conversationStarterUsername = $options->aedpmusername;
+                $conversationRecipientsOption = str_replace(array(
+                    "/r",
+                    "/r/n"
+                ), "/n", $options->aedpmrecipients);
+                $conversationRecipients = array_filter(explode("/n", $conversationRecipientsOption));
+
+                $starterArray = $userModel->getFullUserById($conversationStarterId, array(
+                    'join' => XenForo_Model_User::FETCH_USER_FULL | XenForo_Model_User::FETCH_USER_PERMISSIONS
+                ));
+                if (empty($starterArray) || empty($conversationStarterUsername) || empty($conversationRecipients))
+                {
+                    throw new Exception("Alter Ego Detector - Start PM is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername");
+                }
+                $starterArray['permissions'] = XenForo_Permission::unserializePermissions($starterArray['global_permission_cache']);
+
+
+                /* @var $conversationDw XenForo_DataWriter_ConversationMaster */
+                $this->_debug('Conversation datawriter initialised.');
+                $conversationDw = XenForo_DataWriter::create('XenForo_DataWriter_ConversationMaster');
+                $conversationDw->setExtraData(XenForo_DataWriter_ConversationMaster::DATA_ACTION_USER, $starterArray);
                 $conversationDw->set('user_id', $conversationStarterId);
                 $conversationDw->set('username', $conversationStarterUsername);
                 $conversationDw->set('title', $title);
@@ -225,86 +238,102 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $conversationDw->save();
                 $this->_debug('Line after conversation save');
             }
+            catch(\Exception $e)
+            {
+                XenForo_Error::logException($e);
+            }
         }
 
-        if ($options->aedreport && $options->liam_aed_reporter)
+        if ($options->aedreport)
         {
-            $this->_debug('reporting initialised.');
-
-            $reporterId = $options->liam_aed_reporter;
-
-            /* @var $reportModel XenForo_Model_Report */
-            $reportModel = XenForo_Model::create('XenForo_Model_Report');
-
-            $reportContent = array
-            (
-                $originalUser,
-                $alterEgoUser
-            );
-            // ensure alter-ego detection doesn't nag
-            $makeReport = true;
-            $report = false;
-            $newAlterEgo = true;
-            // do not allow reporting of the alter ego reporter id
-            if ($reporterId != $originalUser['user_id'] && $reporterId != $alterEgoUser['user_id'])
+            try
             {
-                $report = $reportModel->getReportByContent('alterego', $originalUser['user_id']);
-            }
+                $this->_debug('reporting initialised.');
 
-            if ($report)
-            {
-                // update the report to add more users.
-                $content_info = @unserialize($report['content_info']);
-                if (empty($content_info['0']))
+                $reporterId = $options->liam_aed_reporter;
+
+                if (empty($reporterId))
                 {
-                    $content_info['0'] = $reportContent;
+                    throw new Exception("Alter Ego Detector - Start Report is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername");
                 }
-                foreach($content_info['0'] as $user)
+
+                /* @var $reportModel XenForo_Model_Report */
+                $reportModel = XenForo_Model::create('XenForo_Model_Report');
+
+                $reportContent = array
+                (
+                    $originalUser,
+                    $alterEgoUser
+                );
+                // ensure alter-ego detection doesn't nag
+                $makeReport = true;
+                $report = false;
+                $newAlterEgo = true;
+                // do not allow reporting of the alter ego reporter id
+                if ($reporterId != $originalUser['user_id'] && $reporterId != $alterEgoUser['user_id'])
                 {
-                    if ($user['user_id'] == $alterEgoUser['user_id'])
+                    $report = $reportModel->getReportByContent('alterego', $originalUser['user_id']);
+                }
+
+                if ($report)
+                {
+                    // update the report to add more users.
+                    $content_info = @unserialize($report['content_info']);
+                    if (empty($content_info['0']))
                     {
-                        $newAlterEgo = false;
-                        break;
+                        $content_info['0'] = $reportContent;
                     }
-                }
-                if ($newAlterEgo)
-                {
-                    $this->_debug('Adding alter ago '. $alterEgoUsername. ' to known report for '. $originalUsername);
-                    $content_info['0'][] = $alterEgoUser;
-                    $reportContent = $content_info['0'];
-
-
-                    $reportDw = XenForo_DataWriter::create('XenForo_DataWriter_Report');
-                    $reportDw->setExistingData($report, true);
-                    $reportDw->set('content_info', $content_info);
-                    $reportDw->save();
-                }
-                else
-                {
-                    $sendDuplicate = $options->aedreport_senddupe;
-
-                    if (isset($sendDuplicate[$report['report_state']]))
+                    foreach($content_info['0'] as $user)
                     {
-                        $makeReport = $sendDuplicate[$report['report_state']];
+                        if ($user['user_id'] == $alterEgoUser['user_id'])
+                        {
+                            $newAlterEgo = false;
+                            break;
+                        }
+                    }
+                    if ($newAlterEgo)
+                    {
+                        $this->_debug('Adding alter ago '. $alterEgoUsername. ' to known report for '. $originalUsername);
+                        $content_info['0'][] = $alterEgoUser;
+                        $reportContent = $content_info['0'];
+
+
+                        $reportDw = XenForo_DataWriter::create('XenForo_DataWriter_Report');
+                        $reportDw->setExistingData($report, true);
+                        $reportDw->set('content_info', $content_info);
+                        $reportDw->save();
                     }
                     else
                     {
-                        $makeReport = false;
-                    }
+                        $sendDuplicate = $options->aedreport_senddupe;
 
-                    $this->_debug('Report State:' . $report['report_state']);
+                        if (isset($sendDuplicate[$report['report_state']]))
+                        {
+                            $makeReport = $sendDuplicate[$report['report_state']];
+                        }
+                        else
+                        {
+                            $makeReport = false;
+                        }
+
+                        $this->_debug('Report State:' . $report['report_state']);
+                    }
+                }
+
+                if ($makeReport)
+                {
+                    $this->_debug('Make report: ' . $makeReport . ' for '. $originalUsername. ' to report AE: '. $alterEgoUsername);
+                    $message = XenForo_Helper_String::bbCodeStrip($message);
+                    $reportModel->reportContent('alterego', $reportContent, $message, $userModel->getFullUserById($reporterId));
+                }
+                else
+                {
+                    $this->_debug('Suppressing duplicate report.');
                 }
             }
-
-            if ($makeReport)
+            catch(\Exception $e)
             {
-                $this->_debug('Make report: ' . $makeReport . ' for '. $originalUsername. ' to report AE: '. $alterEgoUsername);
-                $message = XenForo_Helper_String::bbCodeStrip($message);
-                $reportModel->reportContent('alterego', $reportContent, $message, $userModel->getFullUserById($reporterId));
-            }
-            else
-            {
-                $this->_debug('Suppressing duplicate report.');
+                XenForo_Error::logException($e);
             }
         }
 
