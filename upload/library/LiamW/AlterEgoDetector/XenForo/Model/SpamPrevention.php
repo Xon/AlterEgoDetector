@@ -194,7 +194,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             }
             catch(\Exception $e)
             {
-                XenForo_Error::logException($e);
+                XenForo_Error::logException($e, false);
             }
         }
 
@@ -240,7 +240,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             }
             catch(\Exception $e)
             {
-                XenForo_Error::logException($e);
+                XenForo_Error::logException($e, false);
             }
         }
 
@@ -333,7 +333,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             }
             catch(\Exception $e)
             {
-                XenForo_Error::logException($e);
+                XenForo_Error::logException($e, false);
             }
         }
 
