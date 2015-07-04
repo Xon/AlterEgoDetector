@@ -9,7 +9,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Register extends XFCP_Liam
         $options = XenForo_Application::getOptions();
         if($options->aedredeploycookie || empty($cookie))
         {
-            $cookie = $user['user_id'];
+            $cookie = $spamModel->userToAlterEgoCookie($user['user_id']);
         }
 
         $this->_debug('Setting cookie for user:' . $user['user_id'] . ' cookie:'.$cookie);

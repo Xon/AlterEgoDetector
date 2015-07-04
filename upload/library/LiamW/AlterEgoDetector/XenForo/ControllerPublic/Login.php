@@ -19,132 +19,34 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_A
 {
     public function actionLogin()
     {
-        $parent = parent::actionLogin();
+        $response = parent::actionLogin();
 
-        /** @var LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention $spamModel */
         $spamModel = $this->_getSpamModel();
-        $userModel = $this->_getUserModel();
-
         $cookie = $spamModel->getCookieValue();
-        $visitor = XenForo_Visitor::getInstance();
-        $originalUserId = $visitor->getUserId();
-        if (!$originalUserId)
+        $currentUserId = XenForo_Visitor::getInstance()->getUserId();
+        if (!$currentUserId)
         {
             /* @var $session XenForo_Session */
             $session = XenForo_Application::getSession();
             $session->set('aedOriginalUser', $cookie);
-            $this->_debug('Session set');
-
-            return $parent;
+            return $response;
         }
 
-        $currentUser = $userModel->getUserById($originalUserId, array(
+        $currentUser = $this->_getUserModel()->getUserById($currentUserId, array(
             'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
         ));
         $currentUser['permissions'] = XenForo_Permission::unserializePermissions($currentUser['global_permission_cache']);
 
-        $options = XenForo_Application::getOptions();
-        $bypassCheck = XenForo_Permission::hasPermission($currentUser['permissions'], 'general', 'aedbypass');
-
-        $isBannedCheck = ($options->aedcheckbanned ? !$visitor->get('is_banned') : true);
-
-        $aeDetected = false;
-
-        $userModel = $this->_getUserModel();
-
-        if ($cookie && !$bypassCheck && $isBannedCheck)
+        $detect_methods = $spamModel->detectAlterEgo($currentUser, $cookie);
+        if ($detect_methods)
         {
-            if ($cookie != $originalUserId)
-            {
-                // AE DETECTED
-                $originalUser = $userModel->getUserById($cookie, array(
-                    'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
-                ));
-                if ($originalUser && isset($originalUser['user_id']))
-                {
-                    if (isset($originalUser['global_permission_cache']))
-                    {
-                        $originalUser['permissions'] = XenForo_Permission::unserializePermissions($originalUser['global_permission_cache']);
-                        $bypassCheck = XenForo_Permission::hasPermission($originalUser['permissions'], 'general',
-                            'aedbypass');
-                    }
-                    else
-                    {
-                        $bypassCheck = false;
-                        // set a new cookie as the old account was deleted
-                        $spamModel->setCookieValue($originalUserId, $options->aed_cookie_lifespan * 2592000);
-                    }
-                    if (!$bypassCheck)
-                    {
-                        $spamModel->processAlterEgoDetection($originalUser, $currentUser);
-                    }
-                }
-            }
-            $this->_debug('Line before return (1)');
-
-            return $parent;
+            $spamModel->processAlterEgoDetection($currentUser, $detect_methods);
         }
-        else if (!$bypassCheck)
-        {
-            // SET COOKIE
-            $spamModel->setCookieValue($originalUserId, $options->aed_cookie_lifespan * 2592000);
-        }
-
-        if (!$aeDetected && !$bypassCheck)
-        {
-            $ipOption = $options->aedcheckips;
-
-            if ($ipOption['checkIp'])
-            {
-                $users = $userModel->getUsersByIp($_SERVER['REMOTE_ADDR'], array(
-                    'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
-                ));
-                if (sizeof($users) > 0)
-                {
-                    foreach ($users as &$originalUser)
-                    {
-                        if ($originalUser['user_id'] == $currentUser['user_id'])
-                        {
-                            continue;
-                        }
-
-                        if ($originalUser['log_date'] > XenForo_Application::$time - $ipOption['minTime'] * 60)
-                        {
-                            $originalUser['permissions'] = XenForo_Permission::unserializePermissions($originalUser['global_permission_cache']);
-                            $bypassCheck = XenForo_Permission::hasPermission($originalUser['permissions'], 'general',
-                                'aedbypass');
-                            if (!$bypassCheck)
-                            {
-                                $spamModel->processAlterEgoDetection($originalUser, $currentUser);
-                            }
-
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        return $parent;
+        return $response;
     }
 
-    private function _getSpamModel()
+    protected function _getSpamModel()
     {
         return $this->getModelFromCache('XenForo_Model_SpamPrevention');
-    }
-
-    private function _debug($message)
-    {
-        if (XenForo_Application::getOptions()->aeddebugmessages)
-        {
-            XenForo_Error::debug($message);
-        }
-    }
-}
-
-if (false)
-{
-    class XFCP_LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XenForo_ControllerPublic_Login
-    {
     }
 }
