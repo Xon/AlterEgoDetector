@@ -17,7 +17,7 @@
  */
 class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention
 {
-    public function logScore($phrase, $score, $data = array())
+    public function aed_logScore($phrase, $score, $data = array())
     {
         $data['reason'] = $phrase;
 
@@ -78,14 +78,14 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 {
                     case 0:
                         $this->_debug('Action register ae detected case 0');
-                        $this->logScore('aed_detectspamreg_accept', 0, array(
+                        $this->aed_logScore('aed_detectspamreg_accept', 0, array(
                             'username' => $originalUsername,
                             'user_id' => $originalUserId
                         ));
                         break;
                     case 1:
                         $this->_debug('Action register ae detected case 1');
-                        $this->logScore('aed_detectspamreg_moderate', 0, array(
+                        $this->aed_logScore('aed_detectspamreg_moderate', 0, array(
                             'username' => $originalUsername,
                             'user_id' => $originalUserId
                         ));
@@ -93,7 +93,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                         break;
                     case 2:
                         $this->_debug('Action register ae detected case 2');
-                        $this->logScore('aed_detectspamreg_reject', 0, array(
+                        $this->aed_logScore('aed_detectspamreg_reject', 0, array(
                             'username' => $originalUsername,
                             'user_id' => $originalUserId
                         ));
