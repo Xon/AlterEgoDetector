@@ -186,6 +186,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 ));
 
                 $firstPostDw = $threadDw->getFirstMessageDw();
+                $firstPostDw->setOption(XenForo_DataWriter_DiscussionMessage::OPTION_IS_AUTOMATED, true);
                 $firstPostDw->set('message', $message);
 
                 $this->_debug('Line before thread datawriter save');
@@ -222,7 +223,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
                 /* @var $conversationDw XenForo_DataWriter_ConversationMaster */
                 $this->_debug('Conversation datawriter initialised.');
-                $conversationDw = XenForo_DataWriter::create('XenForo_DataWriter_ConversationMaster');
+                $conversationDw = XenForo_DataWriter::create('XenForo_DataWriter_ConversationMaster');                
                 $conversationDw->setExtraData(XenForo_DataWriter_ConversationMaster::DATA_ACTION_USER, $starterArray);
                 $conversationDw->set('user_id', $conversationStarterId);
                 $conversationDw->set('username', $conversationStarterUsername);
@@ -232,6 +233,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $conversationDw->addRecipientUserNames($conversationRecipients);
 
                 $firstMessageDw = $conversationDw->getFirstMessageDw();
+                $firstMessageDw->setOption(XenForo_DataWriter_ConversationMessage::OPTION_SET_IP_ADDRESS, true);
                 $firstMessageDw->set('message', $message);
 
                 $this->_debug('Line before conversation save');
