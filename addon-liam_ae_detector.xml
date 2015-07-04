@@ -39,7 +39,7 @@
       <relation group_id="aed_options" display_order="102"/>
     </option>
     <option option_id="aedcheckips" edit_format="template" data_type="array" can_backup="1">
-      <default_value>15</default_value>
+      <default_value>a:2:{s:7:"checkIp";s:1:"0";s:7:"minTime";s:1:"5";}</default_value>
       <edit_format_params>liam_aed_option_ipcheck</edit_format_params>
       <sub_options>checkIp
 minTime</sub_options>
@@ -102,7 +102,7 @@ minTime</sub_options>
       <relation group_id="aed_options" display_order="401"/>
     </option>
     <option option_id="aedreport_senddupe" edit_format="checkbox" data_type="array" can_backup="1">
-      <default_value></default_value>
+      <default_value>a:1:{s:8:"rejected";b:1;}</default_value>
       <edit_format_params>open=Open
 assigned=Assigned
 resolved=Resolved
