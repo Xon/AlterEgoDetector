@@ -16,7 +16,7 @@ class LiamW_AlterEgoDetector_Option_Recipients
             return true;
         }
 
-        $dw->error(new XenForo_Phrase('the_following_recipients_could_not_be_found_x', array('names' => implode(', ', $notFound))), 'recipients');
+        $dw->error(new XenForo_Phrase('the_following_recipients_could_not_be_found_x', array('names' => implode(', ', $notFound))), $fieldName);
         return false;
     }
 }
