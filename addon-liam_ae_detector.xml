@@ -64,7 +64,7 @@ minTime</sub_options>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="202"/>
     </option>
-    <option option_id="aedpmrecipients" edit_format="textbox" data_type="string" can_backup="1">
+    <option option_id="aedpmrecipients" edit_format="textbox" data_type="string" can_backup="1" validation_class="LiamW_AlterEgoDetector_Option_Recipients" validation_method="verifyOption">
       <default_value></default_value>
       <edit_format_params>rows=4</edit_format_params>
       <sub_options></sub_options>
