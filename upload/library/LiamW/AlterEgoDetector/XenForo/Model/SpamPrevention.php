@@ -165,15 +165,15 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         {
             try
             {
-
-
                 $forumId = $options->aedforumid;
                 $userId = $options->aeduserid;
                 $username = $options->aedusername;
-                if (empty($forumId) || empty($userId) || empty($username))
+                $forum = $this->_getForumModel()->getForumById($forumId);
+                if (empty($forumId) || empty($userId) || empty($username) || empty($forum))
                 {
                     throw new Exception("Alter Ego Detector - Create Thread is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername");
                 }
+                $default_prefix_id = $forum['default_prefix_id'];
 
                 $this->_debug('Initialised Thread DataWriter');
                 /* @var $threadDw XenForo_DataWriter_Discussion_Thread */
@@ -182,7 +182,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     'user_id' => $userId,
                     'node_id' => $forumId,
                     'title' => $title,
-                    'username' => $username
+                    'username' => $username,
+                    'prefix_id' => $default_prefix_id,
                 ));
 
                 $firstPostDw = $threadDw->getFirstMessageDw();
@@ -384,9 +385,11 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
     }
 
-    /**
-     * @return XenForo_Model_User
-     */
+    protected function _getForumModel()
+    {
+        return $this->getModelFromCache('XenForo_Model_Forum');
+    }
+
     private function _getUserModel()
     {
         return $this->getModelFromCache('XenForo_Model_User');
@@ -398,12 +401,5 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         {
             XenForo_Error::debug($message);
         }
-    }
-}
-
-if (false)
-{
-    class XFCP_LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XenForo_Model_SpamPrevention
-    {
     }
 }
