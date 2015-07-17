@@ -56,18 +56,11 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
         {
             $report['extraContent'] = $this->prepareExtraContent($contentInfo);
         }
-        $username1 = $report['extraContent'][0][0]['username'];
-        $username2 = $report['extraContent'][0][1]['username'];
-        $userLink1 = XenForo_Link::buildPublicLink('full:members', $report['extraContent'][0][0]);
-        $userLink2 = XenForo_Link::buildPublicLink('full:members', $report['extraContent'][0][1]);
+        $users = $report['extraContent'][0];
 
         $content = parent::getContentForThread($report, $contentInfo);
-        $content['message'] = new XenForo_Phrase('aed_thread_message', array(
-            'username1' => $username1,
-            'username2' => $username2,
-            'userLink1' => $userLink1,
-            'userLink2' => $userLink2
-        ));
+
+        $content['message'] = $this->_getSpamModel()->buildUserDetectionReportBody($users[0], array_slice($users, 1));
         return $content;
     }
 
@@ -77,11 +70,13 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
         {
             $report['extraContent'] = $this->prepareExtraContent($contentInfo);
         }
-        $AE_count = count($report['extraContent'][0]) - 1;
-        $username1 = @$report['extraContent'][0][0]['username'];
+        $users = $report['extraContent'][0];
+        
+        $AE_count = count($users) - 1;
+        $username1 = @$users[0]['username'];
         if ($AE_count <= 1)
         {
-            $username2 = @$report['extraContent'][0][1]['username'];
+            $username2 = @$users[1]['username'];
             return new XenForo_Phrase('aed_thread_subject', array(
                 'username1' => $username1,
                 'username2' => $username2,
@@ -94,4 +89,13 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
             ));
     }
 
+    protected $_spamModel = null;
+    protected function _getSpamModel()
+    {
+        if (empty($this->_spamModel))
+        {
+            $this->_spamModel = XenForo_Model::create('XenForo_Model_SpamPrevention');
+        }
+        return $this->_spamModel;
+    }
 }

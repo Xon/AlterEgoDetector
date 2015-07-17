@@ -76,18 +76,6 @@ minTime</sub_options>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="304"/>
     </option>
-    <option option_id="aedpmsenderid" edit_format="textbox" data_type="unsigned_integer" can_backup="1" validation_class="LiamW_AlterEgoDetector_Option_UserId" validation_method="verifyOption">
-      <default_value>1</default_value>
-      <edit_format_params></edit_format_params>
-      <sub_options></sub_options>
-      <relation group_id="aed_options" display_order="302"/>
-    </option>
-    <option option_id="aedpmusername" edit_format="textbox" data_type="string" can_backup="1">
-      <default_value></default_value>
-      <edit_format_params></edit_format_params>
-      <sub_options></sub_options>
-      <relation group_id="aed_options" display_order="303"/>
-    </option>
     <option option_id="aedredeploycookie" edit_format="onoff" data_type="boolean" can_backup="1">
       <default_value>0</default_value>
       <edit_format_params></edit_format_params>
@@ -126,29 +114,23 @@ rejected</sub_options>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="301"/>
     </option>
-    <option option_id="aeduserid" edit_format="textbox" data_type="unsigned_integer" can_backup="1" validation_class="LiamW_AlterEgoDetector_Option_UserId" validation_method="verifyOption_AllowGuest">
+    <option option_id="aeduserid" edit_format="textbox" data_type="positive_integer" can_backup="1" validation_class="LiamW_AlterEgoDetector_Option_UserId" validation_method="verifyOption">
       <default_value>1</default_value>
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
-      <relation group_id="aed_options" display_order="203"/>
+      <relation group_id="aed_options" display_order="110"/>
     </option>
     <option option_id="aedusername" edit_format="textbox" data_type="string" can_backup="1">
       <default_value></default_value>
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
-      <relation group_id="aed_options" display_order="204"/>
+      <relation group_id="aed_options" display_order="111"/>
     </option>
     <option option_id="liam_aed_cookiename" edit_format="textbox" data_type="string" can_backup="1">
       <default_value>userinit</default_value>
       <edit_format_params>max=10</edit_format_params>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="1"/>
-    </option>
-    <option option_id="liam_aed_reporter" edit_format="textbox" data_type="unsigned_integer" can_backup="1" validation_class="LiamW_AlterEgoDetector_Option_UserId" validation_method="verifyOption">
-      <default_value>1</default_value>
-      <edit_format_params></edit_format_params>
-      <sub_options></sub_options>
-      <relation group_id="aed_options" display_order="402"/>
     </option>
   </optiongroups>
   <permissions>
@@ -188,10 +170,6 @@ rejected</sub_options>
     <phrase title="option_aedforumid_explain" version_id="10306" version_string="1.3.6"><![CDATA[Select the forum you wish to create alter ego threads in.]]></phrase>
     <phrase title="option_aedpmrecipients" version_id="1" version_string="1.0"><![CDATA[Recipient usernames]]></phrase>
     <phrase title="option_aedpmrecipients_explain" version_id="10306" version_string="1.3.6"><![CDATA[Enter a list of users that should receive an alter ego conversation. One per line.]]></phrase>
-    <phrase title="option_aedpmsenderid" version_id="10306" version_string="1.3.6"><![CDATA[Sender UserID]]></phrase>
-    <phrase title="option_aedpmsenderid_explain" version_id="10306" version_string="1.3.6"><![CDATA[Please enter the user_id of the user that will send the PM.]]></phrase>
-    <phrase title="option_aedpmusername" version_id="1" version_string="1.0"><![CDATA[Username of PM Sender]]></phrase>
-    <phrase title="option_aedpmusername_explain" version_id="1" version_string="1.0"><![CDATA[Enter the username of the PM sender]]></phrase>
     <phrase title="option_aedredeploycookie" version_id="2" version_string="1.1"><![CDATA[Redeploy Cookie]]></phrase>
     <phrase title="option_aedredeploycookie_explain" version_id="2" version_string="1.1"><![CDATA[If this is enabled, then the cookie will be reset with the new user if an AE is detected. This could be used to catch AE's of the AE, but may cause 2 flags to be made when each user logs out then in.]]></phrase>
     <phrase title="option_aedregistrationmode" version_id="1" version_string="1.0"><![CDATA[Registration Mode]]></phrase>
@@ -203,9 +181,9 @@ rejected</sub_options>
     <phrase title="option_aedsendpm" version_id="1" version_string="1.0"><![CDATA[Send PM]]></phrase>
     <phrase title="option_aedsendpm_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, a PM will be sent if an AE is detected]]></phrase>
     <phrase title="option_aeduserid" version_id="1" version_string="1.0"><![CDATA[User ID]]></phrase>
-    <phrase title="option_aeduserid_explain" version_id="10306" version_string="1.3.6"><![CDATA[Enter the user id of the user posting the thread. If this is 0 it will be posted as a guest.]]></phrase>
+    <phrase title="option_aeduserid_explain" version_id="10500" version_string="1.5.0"><![CDATA[Enter the user id of the user which will be used to create notifications of an alter-ego. The language of this user will be used. This is required.]]></phrase>
     <phrase title="option_aedusername" version_id="1" version_string="1.0"><![CDATA[Username]]></phrase>
-    <phrase title="option_aedusername_explain" version_id="1" version_string="1.0"><![CDATA[Username of the posting user. This is required.]]></phrase>
+    <phrase title="option_aedusername_explain" version_id="10500" version_string="1.5.0"><![CDATA[Enter the username of the user which will be used to create notifications of an alter-ego. This is required.]]></phrase>
     <phrase title="option_aed_cookie_lifespan" version_id="10405" version_string="1.4.5"><![CDATA[Cookie Lifespan]]></phrase>
     <phrase title="option_aed_cookie_lifespan_explain" version_id="10405" version_string="1.4.5"><![CDATA[The Lifespan of the cookie in months.]]></phrase>
     <phrase title="option_aed_ReportOnRegister" version_id="10500" version_string="1.5.0"><![CDATA[Notify front-end on alter-ego registration]]></phrase>
@@ -217,8 +195,6 @@ rejected</sub_options>
     <phrase title="option_liam_aed_cookiename" version_id="10302" version_string="1.3.2"><![CDATA[Cookie Name]]></phrase>
     <phrase title="option_liam_aed_cookiename_explain" version_id="10302" version_string="1.3.2"><![CDATA[Enter the name of the cookie that will be used for alter ego checking.
 <i>Please be aware that changes here will not update existing cookies.</i>]]></phrase>
-    <phrase title="option_liam_aed_reporter" version_id="10306" version_string="1.3.6"><![CDATA[Reporter]]></phrase>
-    <phrase title="option_liam_aed_reporter_explain" version_id="10306" version_string="1.3.6"><![CDATA[Enter the user id of the person reporting Alter Ego's]]></phrase>
     <phrase title="permission_general_aedbypass" version_id="3" version_string="1.2"><![CDATA[Bypass Alter Ego Checking]]></phrase>
     <phrase title="permission_general_aedviewreport" version_id="10403" version_string="1.4.2a"><![CDATA[View Alter Ego Report]]></phrase>
   </phrases>
