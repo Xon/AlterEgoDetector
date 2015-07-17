@@ -89,11 +89,11 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         $action = XenForo_Model_SpamPrevention::RESULT_ALLOWED;
-        $detect_methods = $this->detectAlterEgo($user, $cookie);
-        if ($detect_methods)
+        $this->detect_methods = $this->detectAlterEgo($user, $cookie);
+        if ($this->detect_methods)
         {
             $this->_debug('Potential Alter Ego Detected.');
-            foreach($detect_methods as $detect_method)
+            foreach($this->detect_methods as $detect_method)
             {
                 $ae_action = $registration_mode;
                 if ($detect_method['suppress'])
@@ -129,6 +129,25 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $this->_updateRegAction($result, $action);
         $this->_lastResult = $result;
         return $result;
+    }
+
+    var $detect_methods = null;
+
+    public function PostRegistrationAlterEgoDetection(XenForo_ControllerResponse_View $response, array $user, array $extraParams = array())
+    {
+        if (empty($this->detect_methods))
+        {
+            return $response;
+        }
+        $detect_methods = $this->detect_methods;
+        $this->detect_methods = null;
+        
+        if (XenForo_Application::getOptions()->aed_ReportOnRegister)
+        {
+            $spamModel->processAlterEgoDetection($user, $detect_methods);
+        }
+
+        return $response;
     }
 
 

@@ -27,8 +27,14 @@
   <optiongroups>
     <group group_id="aed_debugoptions" display_order="100000" debug_only="1"/>
     <group group_id="aed_options" display_order="50000" debug_only="0"/>
+    <option option_id="aed_ReportOnRegister" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="aed_options" display_order="550"/>
+    </option>
     <option option_id="aed_cookie_lifespan" edit_format="spinbox" data_type="positive_integer" can_backup="1">
-      <default_value>12</default_value>
+      <default_value>24</default_value>
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="10"/>
@@ -166,8 +172,8 @@ rejected</sub_options>
     <phrase title="aed_thread_message_user" version_id="10500" version_string="1.5.0"><![CDATA[@{username}, ]]></phrase>
     <phrase title="aed_thread_subject" version_id="10406" version_string="1.4.6"><![CDATA[{username1} & {username2} are alter egos!]]></phrase>
     <phrase title="aed_thread_subject_count" version_id="10408" version_string="1.4.8"><![CDATA[{username} has {count} alter egos!]]></phrase>
-    <phrase title="aed_user_id_not_found" version_id="10412" version_string="1.4.12"><![CDATA[The User Id {UserId} is not valid.]]></phrase>
     <phrase title="aed_triggered_detection_methods" version_id="10500" version_string="1.5.0"><![CDATA[Triggered detection methods:]]></phrase>
+    <phrase title="aed_user_id_not_found" version_id="10412" version_string="1.4.12"><![CDATA[The User Id {UserId} is not valid.]]></phrase>
     <phrase title="liam_aed_check_ips_up_to" version_id="10306" version_string="1.3.6"><![CDATA[Check IP's up to]]></phrase>
     <phrase title="liam_aed_ipcheck" version_id="10306" version_string="1.3.6"><![CDATA[Check IP's]]></phrase>
     <phrase title="option_aedcheckbanned" version_id="10201" version_string="1.2.1"><![CDATA[Check Banned Users]]></phrase>
@@ -202,6 +208,8 @@ rejected</sub_options>
     <phrase title="option_aedusername_explain" version_id="1" version_string="1.0"><![CDATA[Username of the posting user. This is required.]]></phrase>
     <phrase title="option_aed_cookie_lifespan" version_id="10405" version_string="1.4.5"><![CDATA[Cookie Lifespan]]></phrase>
     <phrase title="option_aed_cookie_lifespan_explain" version_id="10405" version_string="1.4.5"><![CDATA[The Lifespan of the cookie in months.]]></phrase>
+    <phrase title="option_aed_ReportOnRegister" version_id="10500" version_string="1.5.0"><![CDATA[Notify front-end on alter-ego registration]]></phrase>
+    <phrase title="option_aed_ReportOnRegister_explain" version_id="10500" version_string="1.5.0"><![CDATA[By default the alter-ego will create threads/conversations/reports the first time a user logs in. With this enabled, these notifications will be generated when the user registers.]]></phrase>
     <phrase title="option_group_aed_debugoptions" version_id="1" version_string="1.0"><![CDATA[Alter Ego Detector Debugging Options]]></phrase>
     <phrase title="option_group_aed_debugoptions_description" version_id="1" version_string="1.0"><![CDATA[Debugging options for the alter ego detector addon. Mainly to make the developer's life easier...]]></phrase>
     <phrase title="option_group_aed_options" version_id="1" version_string="1.0"><![CDATA[Alter Ego Detector Options]]></phrase>

@@ -17,14 +17,21 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Register extends XFCP_Liam
         $session->set('aedOriginalUser', $cookie);
         $spamModel->setCookieValue($cookie, $options->aed_cookie_lifespan * 2592000);
 
-        return parent::_completeRegistration($user, $extraParams);
+        $response = parent::_completeRegistration($user, $extraParams);
+
+        if ($response instanceof XenForo_ControllerResponse_View)
+        {
+            $response = $spamModel->PostRegistrationAlterEgoDetection($response, $user, $extraParams);
+        }
+
+        return $response;
     }
 
     protected function _getSpamModel()
     {
         return $this->getModelFromCache('XenForo_Model_SpamPrevention');
     }
-    
+
     protected function _debug($message)
     {
         if (XenForo_Application::getOptions()->aeddebugmessages)
