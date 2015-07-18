@@ -71,7 +71,7 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
             $report['extraContent'] = $this->prepareExtraContent($contentInfo);
         }
         $users = $report['extraContent'][0];
-        
+
         $AE_count = count($users) - 1;
         $username1 = @$users[0]['username'];
         if ($AE_count <= 1)

@@ -362,6 +362,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             return;
         }
 
+        unset($alterEgoUser['permissions']);
+        unset($alterEgoUser['global_permission_cache']);
         $reportedUser = $alterEgoUser;
         $reportedUserId = $reportedUser['user_id'];
         $users = array();
@@ -392,7 +394,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             unset($detect_method['user']);
             $arr[] = $detect_method;
             $user['detection_methods'] = $arr;
-
+            unset($user['permissions']);
+            unset($user['global_permission_cache']);
             $users[$userId] = $user;
         }
 
@@ -546,11 +549,10 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     /* @var $reportModel XenForo_Model_Report */
                     $reportModel = XenForo_Model::create('XenForo_Model_Report');
 
-                    $userIds = array_fill_keys(array_keys($users), true);
-                    $userIds[$reportedUser['user_id']] = true;
-                    $userIds[$alterEgoUser['user_id']] = true;
+                    $users[$reportedUser['user_id']] = $reportedUser;
+                    $users[$alterEgoUser['user_id']] = $alterEgoUser;
+                    $userIds = array_keys($users);
                     $reportContent = array();
-                    unset($reportedUser['global_permission_cache']);
                     $reportContent[] = $reportedUser;
                     foreach($users as $user)
                     {
@@ -558,10 +560,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                         {
                             continue;
                         }
-                        unset($user['global_permission_cache']);
                         $reportContent[] = $user;
                     }
-                    $users[$alterEgoUser['user_id']] = $alterEgoUser;
 
                     // ensure alter-ego detection doesn't nag
                     $makeReport = true;
@@ -581,31 +581,42 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                         {
                             $content_info['0'] = $reportContent;
                         }
+
+                        // update exiting users
                         foreach($content_info['0'] as $key => $user)
                         {
                             $_userid = $user['user_id'];
-                            if (!isset($users[$_userid]))
+                            if (empty($users[$_userid]))
                             {
                                 continue;
                             }
-                            if (!isset($userIds[$_userid]))
-                            {
-                                $newAlterEgos[] = $users[$_userid];
-                            }
-                            else
-                            {
-                                $content_info['0'][$key] = $users[$_userid];
-                            }
+                            $this->_debug('updating alter ego report content for ' .$_userid .'- ' . $users[$_userid]['username']);
+                            $content_info['0'][$key] = $users[$_userid];
                         }
-                        if ($newAlterEgos)
+
+                        // determine if there are any new users to add
+                        $userIdsReported = XenForo_Application::arrayColumn($content_info['0'], 'user_id');
+                        $userIds = array_diff($userIds, $userIdsReported);
+                        if ($userIds)
                         {
-                            foreach($newAlterEgos as $alter_ego)
+                            foreach($userIds as $_userid)
                             {
-                                $this->_debug('Adding alter ego '. $alter_ego['username']. ' to known report for '. $originalUsername);
-                                $content_info['0'][] = $alter_ego;
+                                if (empty($users[$_userid]))
+                                {
+                                    $this->_debug('Can not find ' .$_userid );
+                                    continue;
+                                }
+                                $this->_debug('Adding alter ego report content for ' .$_userid .'- ' . $users[$_userid]['username']);
+                                $content_info['0'][] = $users[$_userid];
                             }
                             $reportContent = $content_info['0'];
+                        }
+                        $sendDuplicate = $options->aedreport_senddupe;
 
+                        if (isset($sendDuplicate[$report['report_state']]))
+                        {
+                            $makeReport = $sendDuplicate[$report['report_state']];
+                            // update user content
                             $reportDw = XenForo_DataWriter::create('XenForo_DataWriter_Report');
                             $reportDw->setExistingData($report, true);
                             $reportDw->set('content_info', $content_info);
@@ -613,19 +624,10 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                         }
                         else
                         {
-                            $sendDuplicate = $options->aedreport_senddupe;
-
-                            if (isset($sendDuplicate[$report['report_state']]))
-                            {
-                                $makeReport = $sendDuplicate[$report['report_state']];
-                            }
-                            else
-                            {
-                                $makeReport = false;
-                            }
-
-                            $this->_debug('Report State:' . $report['report_state']);
+                            $makeReport = false;
                         }
+
+                        $this->_debug('Report State:' . $report['report_state']);
                     }
 
                     if ($makeReport)
