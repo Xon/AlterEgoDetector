@@ -21,26 +21,34 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_A
     {
         $response = parent::actionLogin();
 
-        $spamModel = $this->_getSpamModel();
-        $cookie = $spamModel->getCookieValue();
-        $currentUserId = XenForo_Visitor::getInstance()->getUserId();
-        if (!$currentUserId)
+        try
         {
-            /* @var $session XenForo_Session */
-            $session = XenForo_Application::getSession();
-            $session->set('aedOriginalUser', $cookie);
-            return $response;
+            $spamModel = $this->_getSpamModel();
+            $cookie = $spamModel->getCookieValue();
+            $currentUserId = XenForo_Visitor::getInstance()->getUserId();
+            if (!$currentUserId)
+            {
+                /* @var $session XenForo_Session */
+                $session = XenForo_Application::getSession();
+                $session->set('aedOriginalUser', $cookie);
+                return $response;
+            }
+
+            $currentUser = $this->_getUserModel()->getUserById($currentUserId, array(
+                'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
+            ));
+            $currentUser['permissions'] = XenForo_Permission::unserializePermissions($currentUser['global_permission_cache']);
+
+            $detect_methods = $spamModel->detectAlterEgo($currentUser, $cookie);
+            if ($detect_methods)
+            {
+                $spamModel->processAlterEgoDetection($currentUser, $detect_methods);
+            }
         }
-
-        $currentUser = $this->_getUserModel()->getUserById($currentUserId, array(
-            'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
-        ));
-        $currentUser['permissions'] = XenForo_Permission::unserializePermissions($currentUser['global_permission_cache']);
-
-        $detect_methods = $spamModel->detectAlterEgo($currentUser, $cookie);
-        if ($detect_methods)
+        catch(Exception $e)
         {
-            $spamModel->processAlterEgoDetection($currentUser, $detect_methods);
+            // do not block login if any sort of error occurs
+            XenForo_Error::logException($e, false);
         }
         return $response;
     }
