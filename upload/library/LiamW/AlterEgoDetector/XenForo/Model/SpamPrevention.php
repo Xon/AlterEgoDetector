@@ -109,6 +109,17 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $this->_debug('inituser (start): ' . $cookie);
         $options = XenForo_Application::getOptions();
         $registration_mode = $options->aedregistrationmode;
+        $registration_mode_group = $options->aedregistrationmode_group;
+        $special_group_ids = $options->aedregistrationmode_group_ids;
+        if ($special_group_ids)
+        {
+            $special_group_ids = explode(",",$special_group_ids);
+        }
+        else
+        {
+            $special_group_ids = array();
+        }
+
         // $user['user_id'] && $visitor->getUserId(); are current empty at this stage
 
         // try fetch the cookie out of the session if it has been associated with the session before
@@ -138,6 +149,35 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     'username' => $detect_method['user']['username'],
                     'user_id' => $detect_method['user']['user_id'],
                 );
+
+                $is_banned = $detect_method['user']['is_banned'];
+                if ($is_banned)
+                {
+                    $ae_action = $registration_mode_group;
+                    $this->_debug('forcing ae action - ae is banned');
+                    $this->aed_logScore('aed_detectspamreg_is_banned', 0, $alter_ego_info);
+                }
+                if ($registration_mode_group)
+                {
+                    $groups = $detect_method['user']['secondary_group_ids'] ? explode(',', $detect_method['user']['secondary_group_ids']) : array();
+                    $groups[] = $detect_method['user']['user_group_id'];
+                    $intersect = array_intersect($groups, $special_group_ids);
+                    if ($intersect)
+                    {
+                        $ae_action = $registration_mode_group;
+                        $this->_debug('forcing ae action - group intersect');
+                        
+                        $group_list = $this->_getHelper()->prepareField(array
+                        (
+                            'old_value' => '',
+                            'new_value' => join(',', $intersect),
+                            'field' => 'secondary_group_ids',
+                        ));
+                        
+                        $alter_ego_info['groups'] = $group_list['new_value'];
+                        $this->aed_logScore('aed_detectspamreg_group_membership', 0, $alter_ego_info);
+                    }
+                }
                 switch ($ae_action)
                 {
                     case 0:
@@ -726,5 +766,10 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         {
             XenForo_Error::debug($message);
         }
+    }
+
+    protected function _getHelper()
+    {
+        return $this->getModelFromCache('XenForo_Helper_UserChangeLog');
     }
 }
