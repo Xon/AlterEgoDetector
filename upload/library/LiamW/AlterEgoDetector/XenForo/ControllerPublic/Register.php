@@ -4,26 +4,33 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Register extends XFCP_Liam
 {
     protected function _completeRegistration(array $user, array $extraParams = array())
     {
-        $spamModel = $this->_getSpamModel();
-        $cookie = $spamModel->getCookieValue();
-        $options = XenForo_Application::getOptions();
-        if($options->aedredeploycookie || empty($cookie))
-        {
-            $cookie = $spamModel->userToAlterEgoCookie($user['user_id']);
-        }
-
-        $this->_debug('Setting cookie for user:' . $user['user_id'] . ' cookie:'.$cookie);
-        $session = XenForo_Application::getSession();
-        $session->set('aedOriginalUser', $cookie);
-        $spamModel->setCookieValue($cookie, $options->aed_cookie_lifespan * 2592000);
-
         $response = parent::_completeRegistration($user, $extraParams);
-
-        if ($response instanceof XenForo_ControllerResponse_View)
+        
+        try
         {
-            $response = $spamModel->PostRegistrationAlterEgoDetection($response, $user, $extraParams);
-        }
+            $spamModel = $this->_getSpamModel();
+            $cookie = $spamModel->getCookieValue();
+            $options = XenForo_Application::getOptions();
+            if($options->aedredeploycookie || empty($cookie))
+            {
+                $cookie = $spamModel->userToAlterEgoCookie($user['user_id']);
+            }
 
+            $this->_debug('Setting cookie for user:' . $user['user_id'] . ' cookie:'.$cookie);
+            $session = XenForo_Application::getSession();
+            $session->set('aedOriginalUser', $cookie);
+            $spamModel->setCookieValue($cookie, $options->aed_cookie_lifespan * 2592000);
+
+            if ($response instanceof XenForo_ControllerResponse_View)
+            {
+                $response = $spamModel->PostRegistrationAlterEgoDetection($response, $user, $extraParams);
+            }
+        }
+        catch(Exception $e)
+        {
+            // do not block login if any sort of error occurs
+            XenForo_Error::logException($e, false);
+        }
         return $response;
     }
 

@@ -102,106 +102,113 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
     public function allowRegistration(array $user, Zend_Controller_Request_Http $request)
     {
         $result = parent::allowRegistration($user, $request);
-
-        $userModel = $this->_getUserModel();
-
-        $cookie = $this->getCookieValue();
-        $this->_debug('inituser (start): ' . $cookie);
-        $options = XenForo_Application::getOptions();
-        $registration_mode = $options->aedregistrationmode;
-        $registration_mode_group = $options->aedregistrationmode_group;
-        $special_group_ids = $options->aedregistrationmode_group_ids;
-        if ($special_group_ids)
+        try
         {
-            $special_group_ids = explode(",",$special_group_ids);
-        }
-        else
-        {
-            $special_group_ids = array();
-        }
+            $userModel = $this->_getUserModel();
 
-        // $user['user_id'] && $visitor->getUserId(); are current empty at this stage
-
-        // try fetch the cookie out of the session if it has been associated with the session before
-        $session = XenForo_Application::getSession();
-        if (empty($cookie))
-        {
-            $cookie = $session->get('aedOriginalUser');
-            $this->_debug('inituser (in if): ' . $cookie);
-        }
-
-        $action = XenForo_Model_SpamPrevention::RESULT_ALLOWED;
-        $this->detect_methods = $this->detectAlterEgo($user, $cookie);
-        if ($this->detect_methods)
-        {
-            $oldlanguage_id = $this->aed_setLangauge($this->aed_getLangaugeForUser($options->aeduserid));
-            $this->_debug('Potential Alter Ego Detected.');
-            foreach($this->detect_methods as $detect_method)
+            $cookie = $this->getCookieValue();
+            $this->_debug('inituser (start): ' . $cookie);
+            $options = XenForo_Application::getOptions();
+            $registration_mode = $options->aedregistrationmode;
+            $registration_mode_group = $options->aedregistrationmode_group;
+            $special_group_ids = $options->aedregistrationmode_group_ids;
+            if ($special_group_ids)
             {
-                $ae_action = $registration_mode;
-                if ($detect_method['suppress'])
-                {
-                    continue;
-                }
-                $alter_ego_info = array
-                (
-                    'detection_method' => $detect_method['method'],
-                    'username' => $detect_method['user']['username'],
-                    'user_id' => $detect_method['user']['user_id'],
-                );
-
-                $is_banned = $detect_method['user']['is_banned'];
-                if ($is_banned)
-                {
-                    $ae_action = $registration_mode_group;
-                    $this->_debug('forcing ae action - ae is banned');
-                    $this->aed_logScore('aed_detectspamreg_is_banned', 0, $alter_ego_info);
-                }
-                if ($registration_mode_group)
-                {
-                    $groups = $detect_method['user']['secondary_group_ids'] ? explode(',', $detect_method['user']['secondary_group_ids']) : array();
-                    $groups[] = $detect_method['user']['user_group_id'];
-                    $intersect = array_intersect($groups, $special_group_ids);
-                    if ($intersect)
-                    {
-                        $ae_action = $registration_mode_group;
-                        $this->_debug('forcing ae action - group intersect');
-                        
-                        $group_list = $this->_getHelper()->prepareField(array
-                        (
-                            'old_value' => '',
-                            'new_value' => join(',', $intersect),
-                            'field' => 'secondary_group_ids',
-                        ));
-                        
-                        $alter_ego_info['groups'] = $group_list['new_value'];
-                        $this->aed_logScore('aed_detectspamreg_group_membership', 0, $alter_ego_info);
-                    }
-                }
-                switch ($ae_action)
-                {
-                    case 0:
-                        $this->_debug('Action register ae detected case 0');
-                        $this->aed_logScore('aed_detectspamreg_accept', 0, $alter_ego_info);
-                        break;
-                    case 1:
-                        $this->_debug('Action register ae detected case 1');
-                        $this->aed_logScore('aed_detectspamreg_moderate', 0, $alter_ego_info);
-                        $this->_updateRegAction($action, XenForo_Model_SpamPrevention::RESULT_MODERATED);
-                        break;
-                    case 2:
-                        $this->_debug('Action register ae detected case 2');
-                        $this->aed_logScore('aed_detectspamreg_reject', 0, $alter_ego_info);
-                        $this->_updateRegAction($action, XenForo_Model_SpamPrevention::RESULT_DENIED);
-                        break;
-                }
+                $special_group_ids = explode(",",$special_group_ids);
+            }
+            else
+            {
+                $special_group_ids = array();
             }
 
-            $this->aed_setLangauge($oldlanguage_id);
-        }
+            // $user['user_id'] && $visitor->getUserId(); are current empty at this stage
 
-        $this->_updateRegAction($result, $action);
-        $this->_lastResult = $result;
+            // try fetch the cookie out of the session if it has been associated with the session before
+            $session = XenForo_Application::getSession();
+            if (empty($cookie))
+            {
+                $cookie = $session->get('aedOriginalUser');
+                $this->_debug('inituser (in if): ' . $cookie);
+            }
+
+            $action = XenForo_Model_SpamPrevention::RESULT_ALLOWED;
+            $this->detect_methods = $this->detectAlterEgo($user, $cookie);
+            if ($this->detect_methods)
+            {
+                $oldlanguage_id = $this->aed_setLangauge($this->aed_getLangaugeForUser($options->aeduserid));
+                $this->_debug('Potential Alter Ego Detected.');
+                foreach($this->detect_methods as $detect_method)
+                {
+                    $ae_action = $registration_mode;
+                    if ($detect_method['suppress'])
+                    {
+                        continue;
+                    }
+                    $alter_ego_info = array
+                    (
+                        'detection_method' => $detect_method['method'],
+                        'username' => $detect_method['user']['username'],
+                        'user_id' => $detect_method['user']['user_id'],
+                    );
+
+                    $is_banned = $detect_method['user']['is_banned'];
+                    if ($is_banned)
+                    {
+                        $ae_action = $registration_mode_group;
+                        $this->_debug('forcing ae action - ae is banned');
+                        $this->aed_logScore('aed_detectspamreg_is_banned', 0, $alter_ego_info);
+                    }
+                    if ($registration_mode_group)
+                    {
+                        $groups = $detect_method['user']['secondary_group_ids'] ? explode(',', $detect_method['user']['secondary_group_ids']) : array();
+                        $groups[] = $detect_method['user']['user_group_id'];
+                        $intersect = array_intersect($groups, $special_group_ids);
+                        if ($intersect)
+                        {
+                            $ae_action = $registration_mode_group;
+                            $this->_debug('forcing ae action - group intersect');
+                            
+                            $group_list = $this->_getHelper()->prepareField(array
+                            (
+                                'old_value' => '',
+                                'new_value' => join(',', $intersect),
+                                'field' => 'secondary_group_ids',
+                            ));
+                            
+                            $alter_ego_info['groups'] = $group_list['new_value'];
+                            $this->aed_logScore('aed_detectspamreg_group_membership', 0, $alter_ego_info);
+                        }
+                    }
+                    switch ($ae_action)
+                    {
+                        case 0:
+                            $this->_debug('Action register ae detected case 0');
+                            $this->aed_logScore('aed_detectspamreg_accept', 0, $alter_ego_info);
+                            break;
+                        case 1:
+                            $this->_debug('Action register ae detected case 1');
+                            $this->aed_logScore('aed_detectspamreg_moderate', 0, $alter_ego_info);
+                            $this->_updateRegAction($action, XenForo_Model_SpamPrevention::RESULT_MODERATED);
+                            break;
+                        case 2:
+                            $this->_debug('Action register ae detected case 2');
+                            $this->aed_logScore('aed_detectspamreg_reject', 0, $alter_ego_info);
+                            $this->_updateRegAction($action, XenForo_Model_SpamPrevention::RESULT_DENIED);
+                            break;
+                    }
+                }
+
+                $this->aed_setLangauge($oldlanguage_id);
+            }
+
+            $this->_updateRegAction($result, $action);
+            $this->_lastResult = $result;
+        }
+        catch(Exception $e)
+        {
+            // do not block login if any sort of error occurs
+            XenForo_Error::logException($e, false);
+        }
         return $result;
     }
 
