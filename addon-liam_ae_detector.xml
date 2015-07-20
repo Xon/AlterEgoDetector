@@ -114,6 +114,12 @@ rejected</sub_options>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="301"/>
     </option>
+    <option option_id="aedshowdetectionmethods" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="aed_options" display_order="105"/>
+    </option>
     <option option_id="aeduserid" edit_format="textbox" data_type="positive_integer" can_backup="1" validation_class="LiamW_AlterEgoDetector_Option_UserId" validation_method="verifyOption">
       <default_value>1</default_value>
       <edit_format_params></edit_format_params>
@@ -143,7 +149,6 @@ rejected</sub_options>
   </permissions>
   <phrases>
     <phrase title="aed_detection_method_cookie" version_id="10500" version_string="1.5.0"><![CDATA[Cookie]]></phrase>
-    <phrase title="aed_detection_method_history" version_id="10500" version_string="1.5.0"><![CDATA[Browser History]]></phrase>
     <phrase title="aed_detection_method_ip" version_id="10500" version_string="1.5.0"><![CDATA[Ip]]></phrase>
     <phrase title="aed_detectspamreg_accept" version_id="10500" version_string="1.5.0"><![CDATA[Accepting, Alter Ego - {method} - Username: {username}, UserId: {user_id}]]></phrase>
     <phrase title="aed_detectspamreg_moderate" version_id="10500" version_string="1.5.0"><![CDATA[Moderating, Alter Ego - {method} - Username: {username}, UserId: {user_id}]]></phrase>
@@ -151,10 +156,17 @@ rejected</sub_options>
     <phrase title="aed_minutes" version_id="10306" version_string="1.3.6"><![CDATA[minutes]]></phrase>
     <phrase title="aed_old" version_id="10306" version_string="1.3.6"><![CDATA[old]]></phrase>
     <phrase title="aed_thread_message" version_id="10500" version_string="1.5.0"><![CDATA[The user @{username} has the following potential alter egos:]]></phrase>
-    <phrase title="aed_thread_message_user" version_id="10500" version_string="1.5.0"><![CDATA[@{username}, ]]></phrase>
+    <phrase title="aed_thread_message_single" version_id="10500" version_string="1.5.0"><![CDATA[It looks like @{username2} is an alter ego of @{username1}...]]></phrase>
+    <phrase title="aed_thread_message_user" version_id="10500" version_string="1.5.0"><![CDATA[@{username}
+]]></phrase>
+    <phrase title="aed_thread_message_user_detection" version_id="10500" version_string="1.5.0"><![CDATA[@{username}, Triggered detection methods: 
+{methods}
+]]></phrase>
+    <phrase title="aed_thread_message_user_detection_single" version_id="10500" version_string="1.5.0"><![CDATA[Triggered detection methods: 
+{methods}]]></phrase>
+    <phrase title="aed_thread_message_user_single" version_id="10500" version_string="1.5.0"><![CDATA[]]></phrase>
     <phrase title="aed_thread_subject" version_id="10406" version_string="1.4.6"><![CDATA[{username1} & {username2} are alter egos!]]></phrase>
     <phrase title="aed_thread_subject_count" version_id="10408" version_string="1.4.8"><![CDATA[{username} has {count} alter egos!]]></phrase>
-    <phrase title="aed_triggered_detection_methods" version_id="10500" version_string="1.5.0"><![CDATA[Triggered detection methods:]]></phrase>
     <phrase title="aed_user_id_not_found" version_id="10412" version_string="1.4.12"><![CDATA[The User Id {UserId} is not valid.]]></phrase>
     <phrase title="liam_aed_check_ips_up_to" version_id="10306" version_string="1.3.6"><![CDATA[Check IP's up to]]></phrase>
     <phrase title="liam_aed_ipcheck" version_id="10306" version_string="1.3.6"><![CDATA[Check IP's]]></phrase>
@@ -180,6 +192,8 @@ rejected</sub_options>
     <phrase title="option_aedreport_senddupe_explain" version_id="10402" version_string="1.4.2"><![CDATA[A list of states which are acceptable for duplicate reports to be raised.]]></phrase>
     <phrase title="option_aedsendpm" version_id="1" version_string="1.0"><![CDATA[Send PM]]></phrase>
     <phrase title="option_aedsendpm_explain" version_id="1" version_string="1.0"><![CDATA[If enabled, a PM will be sent if an AE is detected]]></phrase>
+    <phrase title="option_aedshowdetectionmethods" version_id="10500" version_string="1.5.0"><![CDATA[Show Detection Methods]]></phrase>
+    <phrase title="option_aedshowdetectionmethods_explain" version_id="10500" version_string="1.5.0"><![CDATA[Enable reporting of the exact detection method used to the front-end. Changing this is not retroactive.]]></phrase>
     <phrase title="option_aeduserid" version_id="1" version_string="1.0"><![CDATA[User ID]]></phrase>
     <phrase title="option_aeduserid_explain" version_id="10500" version_string="1.5.0"><![CDATA[Enter the user id of the user which will be used to create notifications of an alter-ego. The language of this user will be used. This is required.]]></phrase>
     <phrase title="option_aedusername" version_id="1" version_string="1.0"><![CDATA[Username]]></phrase>

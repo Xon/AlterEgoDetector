@@ -297,7 +297,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $detect_methods;
     }
 
-    public function buildUserDetectionReport(array $user, array $detection_methods = null)
+    public function buildUserDetectionReport(array $user, array $detection_methods, $ReportDetectionMethod, $isSingle)
     {
         if (empty($detection_methods))
         {
@@ -307,11 +307,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $methods = '';
         foreach($detection_methods as $detect_method)
         {
-            if ($detect_method['suppress'])
-            {
-                continue;
-            }
-            $methods .= " - " .$this->aed_mapDetectionMethod($detect_method['method']) . "\n";
+            $methods .= "- " .$this->aed_mapDetectionMethod($detect_method['method']) . "\n";
         }
 
         if (empty($methods))
@@ -319,24 +315,44 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             return '';
         }
 
-        return new XenForo_Phrase('aed_thread_message_user', array(
-                'username' => $user['username'],
-                'userLink' => XenForo_Link::buildPublicLink('full:members', $user)
-            )) .
-            new XenForo_Phrase('aed_triggered_detection_methods') . "\n" .
-            $methods . "\n";
+        $phrase = $ReportDetectionMethod
+                  ? 'aed_thread_message_user_detection'
+                  : 'aed_thread_message_user';
+        $prepend = $isSingle ? '_single' : '';
+        return new XenForo_Phrase($phrase . $prepend, array(
+            'username' => $user['username'],
+            'userLink' => XenForo_Link::buildPublicLink('full:members', $user),
+            'methods' => $methods,
+        ));
     }
 
     public function buildUserDetectionReportBody(array $alterEgoUser, array $users)
     {
+        $ReportDetectionMethod = XenForo_Application::getOptions()->aedshowdetectionmethods;
+
         // build the message body
-        $message = new XenForo_Phrase('aed_thread_message', array(
-            'username' => $alterEgoUser['username'],
-            'userLink' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser)
-        )) . "\n\n";
+        $isSingle = count($users) == 1;
+        if ($isSingle)
+        {
+            $otherUser = reset($users);
+            $message = new XenForo_Phrase('aed_thread_message_single', array(
+                'username1' => $alterEgoUser['username'],
+                'userLink1' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser),
+                'username2' => $otherUser['username'],
+                'userLink2' => XenForo_Link::buildPublicLink('full:members', $otherUser),
+            ));
+        }
+        else
+        {
+            $message = new XenForo_Phrase('aed_thread_message', array(
+                'username' => $alterEgoUser['username'],
+                'userLink' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser)
+            ));
+        }
+        $message .= "\n\n";
         foreach($users as $user)
         {
-            $message .= $this->buildUserDetectionReport($user, $user['detection_methods']);
+            $message .= $this->buildUserDetectionReport($user, $user['detection_methods'], $ReportDetectionMethod, $isSingle);
         }
 
         return $message;
