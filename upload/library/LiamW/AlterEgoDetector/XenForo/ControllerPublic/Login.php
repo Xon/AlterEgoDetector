@@ -23,7 +23,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_A
 
         try
         {
-            $spamModel = $this->_getSpamModel();
+            $spamModel = $this->_getSpamPreventionModel();
             $cookie = $spamModel->getCookieValue();
             $currentUserId = XenForo_Visitor::getInstance()->getUserId();
             if (!$currentUserId)
@@ -53,7 +53,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_A
         return $response;
     }
 
-    protected function _getSpamModel()
+    protected function _getSpamPreventionModel()
     {
         return $this->getModelFromCache('XenForo_Model_SpamPrevention');
     }

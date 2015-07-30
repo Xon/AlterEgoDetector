@@ -60,7 +60,7 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
 
         $content = parent::getContentForThread($report, $contentInfo);
 
-        $content['message'] = $this->_getSpamModel()->buildUserDetectionReportBody($users[0], array_slice($users, 1));
+        $content['message'] = $this->_getSpamPreventionModel()->buildUserDetectionReportBody($users[0], array_slice($users, 1));
         return $content;
     }
 
@@ -89,13 +89,13 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
             ));
     }
 
-    protected $_spamModel = null;
-    protected function _getSpamModel()
+    protected $_spamPreventionModel = null;
+    protected function _getSpamPreventionModel()
     {
-        if (empty($this->_spamModel))
+        if (empty($this->_spamPreventionModel))
         {
-            $this->_spamModel = XenForo_Model::create('XenForo_Model_SpamPrevention');
+            $this->_spamPreventionModel = XenForo_Model::create('XenForo_Model_SpamPrevention');
         }
-        return $this->_spamModel;
+        return $this->_spamPreventionModel;
     }
 }

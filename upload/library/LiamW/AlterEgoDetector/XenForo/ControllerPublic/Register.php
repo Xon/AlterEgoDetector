@@ -8,7 +8,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Register extends XFCP_Liam
         
         try
         {
-            $spamModel = $this->_getSpamModel();
+            $spamModel = $this->_getSpamPreventionModel();
             $cookie = $spamModel->getCookieValue();
             $options = XenForo_Application::getOptions();
             if($options->aedredeploycookie || empty($cookie))
@@ -34,7 +34,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Register extends XFCP_Liam
         return $response;
     }
 
-    protected function _getSpamModel()
+    protected function _getSpamPreventionModel()
     {
         return $this->getModelFromCache('XenForo_Model_SpamPrevention');
     }
