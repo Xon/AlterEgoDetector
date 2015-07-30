@@ -83,7 +83,7 @@ minTime</sub_options>
       <relation group_id="aed_options" display_order="101"/>
     </option>
     <option option_id="aedregistrationmode" edit_format="radio" data_type="integer" can_backup="1">
-      <default_value>0</default_value>
+      <default_value>1</default_value>
       <edit_format_params>0=None
 1=Moderate
 2=Block</edit_format_params>
