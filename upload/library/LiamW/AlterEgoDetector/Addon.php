@@ -44,12 +44,15 @@ abstract class LiamW_AlterEgoDetector_Addon
                 ('alterego', 'report_handler_class', 'LiamW_AlterEgoDetector_ReportHandler_AlterEgo')
         ");
 
-        // make sure the model is loaded before accessing the static properties
-        XenForo_Model::create("XenForo_Model_User");
-        $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int) values 
-            (?, 0, 'general', 'aedviewreport', 'allow', '0'),
-            (?, 0, 'general', 'aedviewreport', 'allow', '0')
-        ", array(XenForo_Model_User::$defaultModeratorGroupId, XenForo_Model_User::$defaultAdminGroupId));
+        if ($versionId <= 10405)
+        {
+            // make sure the model is loaded before accessing the static properties
+            XenForo_Model::create("XenForo_Model_User");
+            $db->query("insert ignore into xf_permission_entry (user_group_id, user_id, permission_group_id, permission_id, permission_value, permission_value_int) values
+                (?, 0, 'general', 'aedviewreport', 'allow', '0'),
+                (?, 0, 'general', 'aedviewreport', 'allow', '0')
+            ", array(XenForo_Model_User::$defaultModeratorGroupId, XenForo_Model_User::$defaultAdminGroupId));
+        }
 
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
     }
@@ -57,7 +60,7 @@ abstract class LiamW_AlterEgoDetector_Addon
     public static function uninstall()
     {
         $db = XenForo_Application::getDb();
-        
+
         $db->query("
             DELETE FROM xf_content_type
             WHERE xf_content_type.addon_id = 'liam_ae_detector'
@@ -67,6 +70,9 @@ abstract class LiamW_AlterEgoDetector_Addon
             DELETE FROM xf_content_type_field
             WHERE xf_content_type_field.field_value = 'LiamW_AlterEgoDetector_ReportHandler_AlterEgo'
         ");
+
+        $db->delete('xf_permission_entry', "permission_id = 'aedbypass'");
+        $db->delete('xf_permission_entry', "permission_id = 'aedviewreport'");
 
         // update cache
         XenForo_Model::create('XenForo_Model_ContentType')->rebuildContentTypeCache();
