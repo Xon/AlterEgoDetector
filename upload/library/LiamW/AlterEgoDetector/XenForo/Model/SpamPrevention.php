@@ -167,14 +167,14 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                         {
                             $ae_action = $registration_mode_group;
                             $this->_debug('forcing ae action - group intersect');
-                            
+
                             $group_list = $this->_getHelper()->prepareField(array
                             (
                                 'old_value' => '',
                                 'new_value' => join(',', $intersect),
                                 'field' => 'secondary_group_ids',
                             ));
-                            
+
                             $alter_ego_info['groups'] = $group_list['new_value'];
                             $this->aed_logScore('aed_detectspamreg_group_membership', 0, $alter_ego_info);
                         }
@@ -242,8 +242,36 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $userId;
     }
 
+    protected function aed_getLoginAsUserIds(XenForo_Session $session = null)
+    {
+        $loginAsUserIds = array();
+        if ($session)
+        {
+            // https://xenforo.com/community/resources/login-as-user.2493/
+            if ($session->isRegistered('loginAsUser_originalId') && $session->get('loginAsUser_originalId'))
+            {
+                $loginAsUserIds[] = $session->get('loginAsUser_originalId');
+            }
+            // https://xenforo.com/community/resources/login-as-user-by-waindigo.1131/
+            if ($session->isRegistered('loggedInAs') && $session->get('loggedInAs'))
+            {
+                $loginAsUserIds[] = $session->get('loggedInAs');
+            }
+        }
+        return $loginAsUserIds;
+    }
+
     public function detectAlterEgo($currentUser, $cookie)
     {
+        // Disable alter-ego checking if Login As User is detected.
+        $session = XenForo_Application::isRegistered('session') ? XenForo_Application::getSession() : false;
+        $loginAsUserIds = $this->aed_getLoginAsUserIds($session);
+        if ($loginAsUserIds)
+        {
+            $this->_debug('Detected Login-as-user. Disabling alter-ego checking. Original User IDs:'. var_export($loginAsUserIds, true));
+            return array();
+        }
+
         $this->_debug('Detecting alter-egos');
         $detect_methods = array();
         $options = XenForo_Application::getOptions();
