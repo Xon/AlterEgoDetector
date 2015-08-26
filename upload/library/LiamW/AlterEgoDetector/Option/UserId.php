@@ -14,10 +14,22 @@ class LiamW_AlterEgoDetector_Option_UserId
 
     public static function verifyOption(&$option, XenForo_DataWriter $dw, $fieldName)
     {
+        $option = trim($option);
+        if ($option == '')
+        {
+            return true;
+        }
+
         $user = XenForo_Model::create("XenForo_Model_User")->getUserById($option);
 
         if (!empty($user))
         {
+            return true;
+        }
+
+        if ($option == 1)
+        {
+            $option = '';
             return true;
         }
 

@@ -109,6 +109,11 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             $cookie = $this->getCookieValue();
             $this->_debug('inituser (start): ' . $cookie);
             $options = XenForo_Application::getOptions();
+            $aeduserid = $options->aeduserid;
+            if (empty($aeduserid))
+            {
+                return  $result;
+            }
             $registration_mode = $options->aedregistrationmode;
             $registration_mode_group = $options->aedregistrationmode_group;
             $special_group_ids = $options->aedregistrationmode_group_ids;
@@ -135,7 +140,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             $this->detect_methods = $this->detectAlterEgo($user, $cookie);
             if ($this->detect_methods)
             {
-                $oldlanguage_id = $this->aed_setLangauge($this->aed_getLangaugeForUser($options->aeduserid));
+                $oldlanguage_id = $this->aed_setLangauge($this->aed_getLangaugeForUser($aeduserid));
                 $this->_debug('Potential Alter Ego Detected.');
                 foreach($this->detect_methods as $detect_method)
                 {
@@ -506,8 +511,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $username = $options->aedusername;
         if (empty($userId))
         {
-            $userId = 1;
-            XenForo_Error::logException(new Exception("Alter Ego Detector - UserId not set, defaulting to 1"), false);
+            XenForo_Error::logException(new Exception("Alter Ego Detector - UserId not set. Aborting reporting alter egos"), false);
+            return;
         }
         if (empty($username))
         {
