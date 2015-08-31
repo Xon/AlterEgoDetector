@@ -591,10 +591,10 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 try
                 {
                     $conversationRecipientsOption = str_replace(array(
-                        "/r",
-                        "/r/n"
-                    ), "/n", $options->aedpmrecipients);
-                    $conversationRecipients = array_filter(explode("/n", $conversationRecipientsOption));
+                        "\r",
+                        "\r\n"
+                    ), "\n", $options->aedpmrecipients);
+                    $conversationRecipients = array_filter(explode("\n", $conversationRecipientsOption));
 
                     $starterArray = $userModel->getFullUserById($userId, array(
                         'join' => XenForo_Model_User::FETCH_USER_FULL | XenForo_Model_User::FETCH_USER_PERMISSIONS
