@@ -403,7 +403,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             'username' => $user['username'],
             'userLink' => XenForo_Link::buildPublicLink('full:members', $user),
             'methods' => $methods,
-        ));
+        ), false);
     }
 
     public function buildUserDetectionReportBody(array $alterEgoUser, array $users)
@@ -420,14 +420,14 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 'userLink1' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser),
                 'username2' => $otherUser['username'],
                 'userLink2' => XenForo_Link::buildPublicLink('full:members', $otherUser),
-            ));
+            ), false);
         }
         else
         {
             $message = new XenForo_Phrase('aed_thread_message', array(
                 'username' => $alterEgoUser['username'],
                 'userLink' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser)
-            ));
+            ), false);
         }
         $message .= "\n\n";
         foreach($users as $user)
@@ -536,14 +536,14 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $title = new XenForo_Phrase('aed_thread_subject', array(
                     'username1' => $originalUsername,
                     'username2' => $alterEgoUsername,
-                ));
+                ), false);
             }
             else
             {
                 $title = new XenForo_Phrase('aed_thread_subject_count', array(
                     'username' => $reportedUser['username'],
                     'count' => $AE_count,
-                ));
+                ), false);
             }
 
             $message = $this->buildUserDetectionReportBody($alterEgoUser, $users);
