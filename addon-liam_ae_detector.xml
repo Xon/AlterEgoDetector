@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.5.2" version_id="10502" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.5.3" version_id="10503" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -238,29 +238,10 @@ If block is selected, registrations that have failed the AE check will be blocke
   <style_properties/>
   <templates/>
   <public_template_modifications>
-    <modification template="report_view" modification_key="aedreportviewmod_13" description="For XenForo 1.3 &amp; 1.4" execution_order="0" enabled="1" action="str_replace">
-      <find><![CDATA[<div class="secondaryContent memberListItem">
-		<xen:avatar user="$report" size="s" />
-
-		<div class="member">
-			<xen:if is="{$report.user_id}">
-				<h3 class="username"><xen:username user="$report" rich="true" /></h3>
-				
-				<div class="userInfo">
-					<div class="userBlurb dimmed">{xen:helper userBlurb, $report}</div>
-					<dl class="userStats pairsInline">
-						<dt title="{xen:phrase total_messages_posted_by_x, 'name={$report.username}'}">{xen:phrase messages}:</dt> <dd>{xen:number $report.message_count}</dd>
-						<dt title="{xen:phrase number_of_times_something_posted_by_x_has_been_liked, 'name={$report.username}'}">{xen:phrase likes_received}:</dt> <dd>{xen:number $report.like_count}</dd>
-						<dt>{xen:phrase trophy_points}:</dt> <dd title="{xen:phrase trophy_points}">{xen:number $report.trophy_points}</dd>
-					</dl>
-				</div>	
-			<xen:else />
-				<h3 class="username guest dimmed">{xen:phrase guest}</h3>
-			</xen:if>
-		</div>
-	</div>]]></find>
-      <replace><![CDATA[<xen:if is="!{$report.extraContent.0}">
-$0
+    <modification template="report_view" modification_key="aedreportviewmod_13" description="For XenForo 1.3, 1.4 &amp; 1.5" execution_order="0" enabled="1" action="preg_replace">
+      <find><![CDATA[#(\s+)(<div class="secondaryContent memberListItem">.*\s*?)(\s*</div>\s*<div class="section">)#si]]></find>
+      <replace><![CDATA[$1<xen:if is="!{$report.extraContent.0}">
+$1$2
 <xen:else />
 <xen:foreach loop="$report.extraContent.0" value="$user">
      <div class="secondaryContent memberListItem">
@@ -299,7 +280,8 @@ $0
 		</div>
 	</div>
 </xen:foreach>
-</xen:if>]]></replace>
+</xen:if>
+$3]]></replace>
     </modification>
   </public_template_modifications>
   <bb_code_media_sites/>
