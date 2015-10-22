@@ -377,7 +377,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $detect_methods;
     }
 
-    public function buildUserDetectionReport(array $user, array $detection_methods, $ReportDetectionMethod, $isSingle)
+    public function buildUserDetectionReport(array $user, array $detection_methods = null, $ReportDetectionMethod, $isSingle)
     {
         if (empty($detection_methods))
         {
@@ -432,7 +432,16 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $message .= "\n\n";
         foreach($users as $user)
         {
-            $message .= $this->buildUserDetectionReport($user, $user['detection_methods'], $ReportDetectionMethod, $isSingle);
+            $detection_methods = array();
+            if (isset($user['detection_methods']))
+            {
+                $detection_methods = $user['detection_methods'];
+            }
+            if (empty($detection_methods) && isset($alterEgoUser['detection_methods']))
+            {
+                $detection_methods = $alterEgoUser['detection_methods'];
+            }
+            $message .= $this->buildUserDetectionReport($user, $detection_methods, $ReportDetectionMethod, $isSingle);
         }
 
         return $message;
