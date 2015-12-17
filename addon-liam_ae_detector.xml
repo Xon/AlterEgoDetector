@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.5.5" version_id="10505" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.5.6" version_id="10506" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -38,6 +38,12 @@
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="10"/>
+    </option>
+    <option option_id="aed_pm_default_title" edit_format="textbox" data_type="string" can_backup="1">
+      <default_value>Multiple accounts</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="aed_options" display_order="700"/>
     </option>
     <option option_id="aedcheckbanned" edit_format="onoff" data_type="boolean" can_backup="1">
       <default_value></default_value>
@@ -222,6 +228,8 @@ If block is selected, registrations that have failed the AE check will be blocke
     <phrase title="option_aedusername_explain" version_id="10500" version_string="1.5.0"><![CDATA[Enter the username of the user which will be used to create notifications of an alter-ego. This is required.]]></phrase>
     <phrase title="option_aed_cookie_lifespan" version_id="10405" version_string="1.4.5"><![CDATA[Cookie Lifespan]]></phrase>
     <phrase title="option_aed_cookie_lifespan_explain" version_id="10405" version_string="1.4.5"><![CDATA[The Lifespan of the cookie in months.]]></phrase>
+    <phrase title="option_aed_pm_default_title" version_id="10506" version_string="1.5.6"><![CDATA[Default PM Title]]></phrase>
+    <phrase title="option_aed_pm_default_title_explain" version_id="10506" version_string="1.5.6"><![CDATA[]]></phrase>
     <phrase title="option_aed_ReportOnRegister" version_id="10500" version_string="1.5.0"><![CDATA[Notify front-end on alter-ego registration]]></phrase>
     <phrase title="option_aed_ReportOnRegister_explain" version_id="10500" version_string="1.5.0"><![CDATA[By default the alter-ego will create threads/conversations/reports the first time a user logs in. With this enabled, these notifications will be generated when the user registers.]]></phrase>
     <phrase title="option_group_aed_debugoptions" version_id="1" version_string="1.0"><![CDATA[Alter Ego Detector Debugging Options]]></phrase>
@@ -260,6 +268,7 @@ $1$2
 			<xen:if is="{$canEditUsers}">
 				<li><a href="{xen:adminlink users/edit, $user}" target="_blank">{xen:phrase edit}</a></li>
 			</xen:if>
+			<li><a href="{xen:link conversations/add, '', 'to={$user.username}', 'title={$xenOptions.aed_pm_default_title}'}" target="_blank">{xen:phrase start_conversation}</a></li>
 		</ul>
 
 		<div class="member">
