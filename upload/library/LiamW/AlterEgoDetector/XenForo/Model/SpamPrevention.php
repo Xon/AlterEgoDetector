@@ -627,7 +627,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     $conversationDw->addRecipientUserNames($conversationRecipients);
 
                     $firstMessageDw = $conversationDw->getFirstMessageDw();
-                    $firstMessageDw->setOption(XenForo_DataWriter_ConversationMessage::OPTION_SET_IP_ADDRESS, true);
+                    $firstMessageDw->setOption(XenForo_DataWriter_ConversationMessage::OPTION_SET_IP_ADDRESS, false);
                     $firstMessageDw->set('message', $message);
 
                     $this->_debug('Line before conversation save');
