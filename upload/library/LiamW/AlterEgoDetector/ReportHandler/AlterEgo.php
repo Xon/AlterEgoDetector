@@ -57,6 +57,17 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
             $report['extraContent'] = $this->prepareExtraContent($contentInfo);
         }
         $users = $report['extraContent'][0];
+        foreach($users as &$user)
+        {
+            if (!isset($user['username']))
+            {
+                $user['username'] = 'guest';
+            }
+            if (!isset($user['user_id']))
+            {
+                $user['user_id'] = 0;
+            }
+        }
 
         $content = parent::getContentForThread($report, $contentInfo);
 
@@ -71,12 +82,23 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
             $report['extraContent'] = $this->prepareExtraContent($contentInfo);
         }
         $users = $report['extraContent'][0];
+        foreach($users as &$user)
+        {
+            if (!isset($user['username']))
+            {
+                $user['username'] = 'guest';
+            }
+            if (!isset($user['user_id']))
+            {
+                $user['user_id'] = 0;
+            }
+        }
 
         $AE_count = count($users) - 1;
-        $username1 = @$users[0]['username'];
+        $username1 = $users[0]['username'];
         if ($AE_count <= 1)
         {
-            $username2 = @$users[1]['username'];
+            $username2 = $users[1]['username'];
             return new XenForo_Phrase('aed_thread_subject', array(
                 'username1' => $username1,
                 'username2' => $username2,
