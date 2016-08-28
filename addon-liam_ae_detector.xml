@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.5.8" version_id="1050800" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.6.0" version_id="1060000" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -14,12 +14,19 @@
 	</xen:html>
 </xen:checkboxunit>]]></template>
   </admin_templates>
-  <admin_template_modifications/>
+  <admin_template_modifications>
+    <modification template="user_moderated" modification_key="aed_user_moderated" description="Require email confirmation otpion" execution_order="2405" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:option value="approve">{xen:phrase approve}</xen:option>]]></find>
+      <replace><![CDATA[$0
+<xen:option value="aed_email_confirm">{xen:phrase aed_require_email_confirmation}</xen:option>]]></replace>
+    </modification>
+  </admin_template_modifications>
   <code_events/>
   <code_event_listeners>
-    <listener event_id="load_class" execute_order="1" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Login" description="XenForo_ControllerPublic_Login"/>
-    <listener event_id="load_class" execute_order="5" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Register" description="XenForo_ControllerPublic_Register"/>
-    <listener event_id="load_class" execute_order="10" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_Model_SpamPrevention" description="XenForo_Model_SpamPrevention"/>
+    <listener event_id="load_class_controller" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Login" description="XenForo_ControllerPublic_Login"/>
+    <listener event_id="load_class_controller" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Register" description="XenForo_ControllerPublic_Register"/>
+    <listener event_id="load_class_model" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_Model_UserConfirmation" description="XenForo_Model_UserConfirmation"/>
+    <listener event_id="load_class_model" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_Model_SpamPrevention" description="XenForo_Model_SpamPrevention"/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
@@ -177,6 +184,7 @@ rejected</sub_options>
     <phrase title="aed_detectspamreg_reject" version_id="10500" version_string="1.5.0"><![CDATA[Rejecting, Alter Ego - {method} - Username: {username}], UserId: {user_id}]]></phrase>
     <phrase title="aed_minutes" version_id="10306" version_string="1.3.6"><![CDATA[minutes]]></phrase>
     <phrase title="aed_old" version_id="10306" version_string="1.3.6"><![CDATA[old]]></phrase>
+    <phrase title="aed_require_email_confirmation" version_id="1060000" version_string="1.6.0"><![CDATA[Require email confirmation (always notifies)]]></phrase>
     <phrase title="aed_thread_message" version_id="10500" version_string="1.5.0"><![CDATA[The user @{username} has the following potential alter egos:]]></phrase>
     <phrase title="aed_thread_message_single" version_id="10500" version_string="1.5.0"><![CDATA[It looks like @{username2} is an alter ego of @{username1}...]]></phrase>
     <phrase title="aed_thread_message_user" version_id="10500" version_string="1.5.0"><![CDATA[@{username}
