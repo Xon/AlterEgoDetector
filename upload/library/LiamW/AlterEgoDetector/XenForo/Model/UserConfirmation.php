@@ -13,7 +13,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_UserConfirmation extends XFCP_LiamW_A
         {
             $dw = XenForo_DataWriter::create('XenForo_DataWriter_User');
             $dw->setExistingData($user);
-            $dw->advanceRegistrationUserState();
+            $dw->set('user_state', 'email_confirm');
             $dw->save();
 
             $this->sendEmailConfirmation($dw->getMergedData());
