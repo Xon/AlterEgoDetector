@@ -702,6 +702,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                         // determine if there are any new users to add
                         $userIdsReported = XenForo_Application::arrayColumn($content_info['0'], 'user_id');
                         $userIds = array_diff($userIds, $userIdsReported);
+                        $forceReport = false;
                         if ($userIds)
                         {
                             foreach($userIds as $_userid)
@@ -713,14 +714,15 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                                 }
                                 $this->_debug('Adding alter ego report content for ' .$_userid .'- ' . $users[$_userid]['username']);
                                 $content_info['0'][] = $users[$_userid];
+                                $forceReport = true;
                             }
                             $reportContent = $content_info['0'];
                         }
                         $sendDuplicate = $options->aedreport_senddupe;
 
-                        if (isset($sendDuplicate[$report['report_state']]))
+                        if ($forceReport || isset($sendDuplicate[$report['report_state']]))
                         {
-                            $makeReport = $sendDuplicate[$report['report_state']];
+                            $makeReport = $forceReport || $sendDuplicate[$report['report_state']];
                             // update user content
                             $reportDw = XenForo_DataWriter::create('XenForo_DataWriter_Report');
                             $reportDw->setExistingData($report, true);
