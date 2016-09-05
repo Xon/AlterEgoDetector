@@ -374,6 +374,35 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             }
         }
 
+        if ($detect_methods &&
+            $options->aed_matching_mode)
+        {
+            $detectionMethods = 1;
+            if ($ipOption['checkIp'])
+            {
+                $detectionMethods += 1;
+            }
+            if ($detectionMethods > 1)
+            {
+                $uniqueMethods = array();
+                foreach($detect_methods as $detect_method)
+                {
+                    if ($detect_method['suppress'])
+                    {
+                        continue;
+                    }
+                    if (!isset($uniqueMethods[$detect_method['method']]))
+                    {
+                        $uniqueMethods[$detect_method['method']] = true;
+                    }
+                }
+                if (count($uniqueMethods) != $detectionMethods)
+                {
+                    $detect_methods = array();
+                }
+            }
+        }
+
         return $detect_methods;
     }
 
