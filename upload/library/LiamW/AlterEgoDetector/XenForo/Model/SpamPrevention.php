@@ -280,6 +280,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $this->_debug('Detecting alter-egos');
         $detect_methods = array();
         $options = XenForo_Application::getOptions();
+        $matching_mode = $options->aed_matching_mode;
 
         // $user['user_id'] && $visitor->getUserId(); may be empty at this stage
         $currentUserId = empty($currentUser['user_id'])
@@ -300,6 +301,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         $userModel = $this->_getUserModel();
+        $cookie_user_id = null;
         $this->_debug('Checking Cookie');
         if ($cookie && $cookie != $currentUserCookie)
         {
@@ -348,6 +350,11 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     continue;
                 }
 
+                if ($matching_mode == 2 && $cookie_user_id != $originalUser['user_id'])
+                {
+                    continue
+                }
+
                 $permissions = XenForo_Permission::unserializePermissions($originalUser['global_permission_cache']);
                 $bypassCheck_ip = XenForo_Permission::hasPermission($permissions, 'general', 'aedbypass');
                 $detect_methods[] = array
@@ -375,7 +382,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         if ($detect_methods &&
-            $options->aed_matching_mode)
+            $matching_mode)
         {
             $detectionMethods = 1;
             if ($ipOption['checkIp'])

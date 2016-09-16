@@ -49,7 +49,8 @@
     <option option_id="aed_matching_mode" edit_format="radio" data_type="integer" can_backup="1">
       <default_value>0</default_value>
       <edit_format_params>0={xen:phrase or}
-1={xen:phrase and}</edit_format_params>
+1={xen:phrase and}
+2={xen:phrase aed_cookie_only}</edit_format_params>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="106"/>
     </option>
@@ -182,6 +183,7 @@ rejected</sub_options>
     <interface_groups/>
   </permissions>
   <phrases>
+    <phrase title="aed_cookie_only" version_id="10500" version_string="1.6.2"><![CDATA[Cookie Only]]></phrase>
     <phrase title="aed_detection_method_cookie" version_id="10500" version_string="1.5.0"><![CDATA[Cookie]]></phrase>
     <phrase title="aed_detection_method_ip" version_id="10500" version_string="1.5.0"><![CDATA[Ip]]></phrase>
     <phrase title="aed_detectspamreg_accept" version_id="10500" version_string="1.5.0"><![CDATA[Accepting, Alter Ego - {method} - Username: {username}, UserId: {user_id}]]></phrase>
