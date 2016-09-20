@@ -53,7 +53,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
     {
         if (empty($phraseCache[$method]))
         {
-            $phraseCache[$method] = '' . new XenForo_Phrase($method);
+            $phraseCache[$method] = new XenForo_Phrase($method);
         }
         return $phraseCache[$method];
     }
@@ -352,7 +352,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
                 if ($matching_mode == 2 && $cookie_user_id != $originalUser['user_id'])
                 {
-                    continue
+                    continue;
                 }
 
                 $permissions = XenForo_Permission::unserializePermissions($originalUser['global_permission_cache']);
