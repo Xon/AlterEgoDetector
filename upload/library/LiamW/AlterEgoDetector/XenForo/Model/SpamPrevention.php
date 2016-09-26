@@ -43,19 +43,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
         $visitor->setVisitorLanguage($newLanguageId);
         XenForo_Phrase::reset();
-        $_phraseCache = array();
 
         return $language['language_id'];
-    }
-
-    protected static $_phraseCache = array();
-    public function aed_mapDetectionMethod($method)
-    {
-        if (empty($phraseCache[$method]))
-        {
-            $phraseCache[$method] = new XenForo_Phrase($method);
-        }
-        return $phraseCache[$method];
     }
 
     public function aed_logScore($phrase, $score, $data = array())
@@ -71,10 +60,9 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             $data['score'] = '+' . $score;
         }
 
-        $method = empty($data['detection_method'])
-                  ? LiamW_AlterEgoDetector_Globals::DETECT_METHOD_COOKIE
-                  : $data['detection_method'];
-        $data['method'] = $this->aed_mapDetectionMethod($method);
+        $data['method'] = empty($data['detection_method'])
+                          ? new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_COOKIE)
+                          : $data['detection_method'];
 
         $this->_resultDetails[] = array(
             'phrase' => $phrase,
@@ -137,10 +125,10 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             }
 
             $action = XenForo_Model_SpamPrevention::RESULT_ALLOWED;
+            $oldlanguage_id = $this->aed_setLangauge($this->aed_getLangaugeForUser($aeduserid));
             $this->detect_methods = $this->detectAlterEgo($user, $cookie);
             if ($this->detect_methods)
             {
-                $oldlanguage_id = $this->aed_setLangauge($this->aed_getLangaugeForUser($aeduserid));
                 $this->_debug('Potential Alter Ego Detected.');
                 foreach($this->detect_methods as $detect_method)
                 {
@@ -202,10 +190,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                             break;
                     }
                 }
-
-                $this->aed_setLangauge($oldlanguage_id);
             }
-
+            $this->aed_setLangauge($oldlanguage_id);
             $this->_updateRegAction($result, $action);
             $this->_lastResult = $result;
         }
@@ -318,7 +304,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $detect_methods[] = array
                 (
                     'suppress' => $bypassChecks || (!$checkBanned && $originalUser['is_banned']) || $bypassCheck_cookie,
-                    'method' => LiamW_AlterEgoDetector_Globals::DETECT_METHOD_COOKIE,
+                    'method' => new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_COOKIE),
                     'user' => $originalUser,
                 );
                 $this->_debug('Cookie detection method triggered for: '. $originalUser['username']);
@@ -337,6 +323,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             $users = $userModel->getUsersByIp($_SERVER['REMOTE_ADDR'], array(
                 'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
             ));
+            $ipPhrase = new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_IP, array('ip' => $_SERVER['REMOTE_ADDR']));
             $this->_debug(count($users) .' users with IP '.$_SERVER['REMOTE_ADDR'].', Checking for freshness...');
             foreach ($users as &$originalUser)
             {
@@ -360,7 +347,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $detect_methods[] = array
                 (
                     'suppress' => $bypassChecks || (!$checkBanned && $originalUser['is_banned']) || $bypassCheck_ip,
-                    'method' => LiamW_AlterEgoDetector_Globals::DETECT_METHOD_IP,
+                    'method' => $ipPhrase,
                     'user' => $originalUser,
                 );
                 $this->_debug('IP detection method triggered for: '. $originalUser['username']);
@@ -423,7 +410,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $methods = '';
         foreach($detection_methods as $detect_method)
         {
-            $methods .= "- " .$this->aed_mapDetectionMethod($detect_method['method']) . "\n";
+            $methods .= "- " . $detect_method['method'] . "\n";
         }
 
         if (empty($methods))
