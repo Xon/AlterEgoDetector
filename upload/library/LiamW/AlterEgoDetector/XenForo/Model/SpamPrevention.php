@@ -252,6 +252,50 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $loginAsUserIds;
     }
 
+    protected function _getIpRecord($ip)
+    {
+        $results = XenForo_Helper_Ip::parseIpRangeString($ip);
+        if (!$results)
+        {
+            throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_ip_or_ip_range'), true);
+        }
+
+        return array(
+            $results['printable'],
+            $results['binary'][0],
+            $results['startRange'],
+            $results['endRange']
+        );
+    }
+
+    protected function aed_ipWhiteListed()
+    {
+        $this->_debug('Checking IP whitelist');
+        $raw = XenForo_Application::getOptions()->aed_ip_whitelist;
+        if (empty($raw))
+        {
+            return false;
+        }
+        $whitelistedIPs = array_filter(array_map('trim', explode(',', preg_replace('/\s+/s', ',', $raw))));
+        if (empty($whitelistedIPs))
+        {
+            return false;
+        }
+        $this->_debug('ranges to check: '. var_export($whitelistedIPs, true));
+        $binaryIp = XenForo_Helper_Ip::getBinaryIp();
+        foreach ($whitelistedIPs as $ip)
+        {
+            list($niceIp, $firstByte, $startRange, $endRange) = $this->_getIpRecord($ip);
+            if (XenForo_Helper_Ip::ipMatchesRange($binaryIp, $startRange, $endRange))
+            {
+                $this->_debug('Whitelisted IP, matches:'.$niceIp);
+                return true;
+            }
+        }
+        $this->_debug('Not whitelisted');
+        return false;
+    }
+
     public function detectAlterEgo($currentUser, $cookie)
     {
         // Disable alter-ego checking if Login As User is detected.
@@ -317,7 +361,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         $ipOption = $options->aedcheckips;
-        if ($ipOption['checkIp'])
+        if ($ipOption['checkIp'] && !$this->aed_ipWhiteListed())
         {
             $this->_debug('Checking IP');
             $users = $userModel->getUsersByIp($_SERVER['REMOTE_ADDR'], array(
