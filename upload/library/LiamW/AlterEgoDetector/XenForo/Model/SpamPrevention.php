@@ -412,8 +412,14 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             }
         }
 
+        // resolve any phrases
+        foreach($detect_methods as &$detect_method)
+        {
+            $detect_method['method'] = (string)$detect_method['method'];
+        }
+
         if ($detect_methods &&
-            $matching_mode)
+            $matching_mode == 1)
         {
             $detectionMethods = 1;
             if ($ipOption['checkIp'])
@@ -425,7 +431,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $uniqueMethods = array();
                 foreach($detect_methods as $detect_method)
                 {
-                    if ($detect_method['suppress'])
+                    if ($detect_method['suppress'] || empty($detect_method['method']))
                     {
                         continue;
                     }
@@ -436,6 +442,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 }
                 if (count($uniqueMethods) != $detectionMethods)
                 {
+                    $this->_debug('AND matching method, skipping only match 1 reporting method');
                     $detect_methods = array();
                 }
             }
