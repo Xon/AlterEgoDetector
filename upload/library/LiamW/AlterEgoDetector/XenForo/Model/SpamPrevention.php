@@ -296,6 +296,34 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return false;
     }
 
+    public function _getUsersByIp($ip, $timeLimit)
+    {
+        if (!$ip)
+        {
+            return array();
+        }
+
+        $ip = XenForo_Helper_Ip::convertIpStringToBinary($ip);
+        if (!$ip)
+        {
+            return array();
+        }
+
+        return $this->fetchAllKeyed('
+            SELECT user.*, a.ip, a.log_date, permission_combination.cache_value AS global_permission_cache
+            FROM (
+                select user_id, ip, max(log_date) as log_date
+                FROM xf_ip AS ip
+                WHERE ip.ip = ? and log_date >= ?
+                GROUP BY ip.user_id
+            ) a
+            INNER JOIN xf_user AS user ON (user.user_id = a.user_id)
+            LEFT JOIN xf_permission_combination AS permission_combination ON (permission_combination.permission_combination_id = user.permission_combination_id)
+            ORDER BY user.user_id
+        ', 'user_id', array($ip,  XenForo_Application::$time - $timeLimit * 60));
+    }
+
+
     public function detectAlterEgo($currentUser, $cookie)
     {
         // Disable alter-ego checking if Login As User is detected.
@@ -364,19 +392,12 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         if ($ipOption['checkIp'] && !$this->aed_ipWhiteListed())
         {
             $this->_debug('Checking IP');
-            $users = $userModel->getUsersByIp($_SERVER['REMOTE_ADDR'], array(
-                'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
-            ));
+            $users = $this->_getUsersByIp($_SERVER['REMOTE_ADDR'], $ipOption['minTime']);
             $ipPhrase = new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_IP, array('ip' => $_SERVER['REMOTE_ADDR']));
             $this->_debug(count($users) .' users with IP '.$_SERVER['REMOTE_ADDR'].', Checking for freshness...');
             foreach ($users as &$originalUser)
             {
                 if ($currentUserId && $originalUser['user_id'] == $currentUserId)
-                {
-                    continue;
-                }
-
-                if ($originalUser['log_date'] < XenForo_Application::$time - $ipOption['minTime'] * 60)
                 {
                     continue;
                 }
