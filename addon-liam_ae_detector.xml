@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.6.3" version_id="1060300" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.0" version_id="1070000" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -190,6 +190,8 @@ rejected</sub_options>
   </permissions>
   <phrases>
     <phrase title="aed_cookie_only" version_id="10500" version_string="1.6.2"><![CDATA[Cookie Only]]></phrase>
+    <phrase title="aed_detectiontype_login" version_id="1070000" version_string="1.7.0"><![CDATA[registration]]></phrase>
+    <phrase title="aed_detectiontype_register" version_id="1070000" version_string="1.7.0"><![CDATA[login]]></phrase>
     <phrase title="aed_detection_method_cookie" version_id="10500" version_string="1.5.0"><![CDATA[Cookie]]></phrase>
     <phrase title="aed_detection_method_ip" version_id="10500" version_string="1.5.0"><![CDATA[Ip]]></phrase>
     <phrase title="aed_detectspamreg_accept" version_id="10500" version_string="1.5.0"><![CDATA[Accepting, Alter Ego - {method} - Username: {username}, UserId: {user_id}]]></phrase>
@@ -200,8 +202,8 @@ rejected</sub_options>
     <phrase title="aed_minutes" version_id="10306" version_string="1.3.6"><![CDATA[minutes]]></phrase>
     <phrase title="aed_old" version_id="10306" version_string="1.3.6"><![CDATA[old]]></phrase>
     <phrase title="aed_require_email_confirmation" version_id="1060000" version_string="1.6.0"><![CDATA[Require email confirmation (always notifies)]]></phrase>
-    <phrase title="aed_thread_message" version_id="10500" version_string="1.5.0"><![CDATA[The user @{username} has the following potential alter egos:]]></phrase>
-    <phrase title="aed_thread_message_single" version_id="10500" version_string="1.5.0"><![CDATA[It looks like @{username2} is an alter ego of @{username1}...]]></phrase>
+    <phrase title="aed_thread_message" version_id="1070000" version_string="1.7.0"><![CDATA[On {detectionType}, the user @{username} has the following potential alter egos:]]></phrase>
+    <phrase title="aed_thread_message_single" version_id="1070000" version_string="1.7.0"><![CDATA[On {detectionType}, it looks like @{username2} is an alter ego of @{username1}...]]></phrase>
     <phrase title="aed_thread_message_user" version_id="10500" version_string="1.5.0"><![CDATA[@{username}
 ]]></phrase>
     <phrase title="aed_thread_message_user_detection" version_id="10500" version_string="1.5.0"><![CDATA[@{username}, Triggered detection methods: 

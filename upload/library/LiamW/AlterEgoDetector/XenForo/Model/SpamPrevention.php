@@ -216,7 +216,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
         if (XenForo_Application::getOptions()->aed_ReportOnRegister)
         {
-            $this->processAlterEgoDetection($user, $detect_methods);
+            $this->processAlterEgoDetection($user, $detect_methods, new XenForo_Phrase('aed_detectiontype_register'));
         }
 
         return $response;
@@ -501,7 +501,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         ), false);
     }
 
-    public function buildUserDetectionReportBody(array $alterEgoUser, array $users)
+    public function buildUserDetectionReportBody(array $alterEgoUser, array $users, $detectionType = null)
     {
         $ReportDetectionMethod = XenForo_Application::getOptions()->aedshowdetectionmethods;
 
@@ -515,13 +515,15 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 'userLink1' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser),
                 'username2' => $otherUser['username'],
                 'userLink2' => XenForo_Link::buildPublicLink('full:members', $otherUser),
+                'detectionType' => $detectionType,
             ), false);
         }
         else
         {
             $message = new XenForo_Phrase('aed_thread_message', array(
                 'username' => $alterEgoUser['username'],
-                'userLink' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser)
+                'userLink' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser),
+                'detectionType' => $detectionType,
             ), false);
         }
         $message .= "\n\n";
@@ -542,7 +544,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $message;
     }
 
-    public function processAlterEgoDetection($alterEgoUser, array $detect_methods)
+    public function processAlterEgoDetection($alterEgoUser, array $detect_methods, $detectionType = null)
     {
         $this->_debug('Reporting alter-egos');
 
@@ -560,6 +562,11 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         if (empty($detect_methods))
         {
             return;
+        }
+        // assume login
+        if ($detectionType === null)
+        {
+            $detectionType = new XenForo_Phrase('aed_detectiontype_login');
         }
 
         unset($alterEgoUser['permissions']);
@@ -640,6 +647,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $title = new XenForo_Phrase('aed_thread_subject', array(
                     'username1' => $originalUsername,
                     'username2' => $alterEgoUsername,
+                    'detectionType' => $detectionType,
                 ), false);
             }
             else
@@ -647,10 +655,11 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $title = new XenForo_Phrase('aed_thread_subject_count', array(
                     'username' => $reportedUser['username'],
                     'count' => $AE_count,
+                    'detectionType' => $detectionType,
                 ), false);
             }
 
-            $message = $this->buildUserDetectionReportBody($alterEgoUser, $users);
+            $message = $this->buildUserDetectionReportBody($alterEgoUser, $users, $detectionType);
 
             if ($options->aedcreatethread)
             {

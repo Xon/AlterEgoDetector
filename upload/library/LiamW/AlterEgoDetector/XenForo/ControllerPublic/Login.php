@@ -42,7 +42,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_A
             $detect_methods = $spamModel->detectAlterEgo($currentUser, $cookie);
             if ($detect_methods)
             {
-                $spamModel->processAlterEgoDetection($currentUser, $detect_methods);
+                $spamModel->processAlterEgoDetection($currentUser, $detect_methods, new XenForo_Phrase('aed_detectiontype_login'));
             }
         }
         catch(Exception $e)
