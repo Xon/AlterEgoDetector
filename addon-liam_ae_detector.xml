@@ -190,8 +190,8 @@ rejected</sub_options>
   </permissions>
   <phrases>
     <phrase title="aed_cookie_only" version_id="10500" version_string="1.6.2"><![CDATA[Cookie Only]]></phrase>
-    <phrase title="aed_detectiontype_login" version_id="1070000" version_string="1.7.0"><![CDATA[registration]]></phrase>
-    <phrase title="aed_detectiontype_register" version_id="1070000" version_string="1.7.0"><![CDATA[login]]></phrase>
+    <phrase title="aed_detectiontype_login" version_id="1070000" version_string="1.7.0"><![CDATA[login]]></phrase>
+    <phrase title="aed_detectiontype_register" version_id="1070000" version_string="1.7.0"><![CDATA[registration]]></phrase>
     <phrase title="aed_detection_method_cookie" version_id="10500" version_string="1.5.0"><![CDATA[Cookie]]></phrase>
     <phrase title="aed_detection_method_ip" version_id="10500" version_string="1.5.0"><![CDATA[Ip]]></phrase>
     <phrase title="aed_detectspamreg_accept" version_id="10500" version_string="1.5.0"><![CDATA[Accepting, Alter Ego - {method} - Username: {username}, UserId: {user_id}]]></phrase>
