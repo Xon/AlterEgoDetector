@@ -826,6 +826,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
                         if ($forceReport || isset($sendDuplicate[$report['report_state']]))
                         {
+                            $content_info[0][0]['detectionType'] = (string)$detectionType;
                             $makeReport = $forceReport || $sendDuplicate[$report['report_state']];
                             // update user content
                             $reportDw = XenForo_DataWriter::create('XenForo_DataWriter_Report');
@@ -843,6 +844,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
                     if ($makeReport)
                     {
+                        $reportContent[0]['detectionType'] = (string)$detectionType;
                         $this->_debug('Make report: ' . $makeReport . ' for '. $originalUsername. ' to report AE: '. $alterEgoUsername);
                         $message = XenForo_Helper_String::bbCodeStrip($message);
                         $reportModel->reportContent('alterego', $reportContent, $message, $userModel->getFullUserById($userId));

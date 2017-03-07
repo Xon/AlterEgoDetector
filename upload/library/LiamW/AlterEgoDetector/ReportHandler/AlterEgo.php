@@ -96,18 +96,21 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
 
         $AE_count = count($users) - 1;
         $username1 = $users[0]['username'];
+        $detectionType = empty($users[0]['detectionType']) ? '' : $users[0]['detectionType'];
         if ($AE_count <= 1)
         {
             $username2 = $users[1]['username'];
             return new XenForo_Phrase('aed_thread_subject', array(
                 'username1' => $username1,
                 'username2' => $username2,
+                'detectionType' => $detectionType,
             ));
         }
         else
             return new XenForo_Phrase('aed_thread_subject_count', array(
                 'username' => $username1,
                 'count' => $AE_count,
+                'detectionType' => $detectionType,
             ));
     }
 
