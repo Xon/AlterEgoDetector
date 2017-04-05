@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.1" version_id="1070100" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.2" version_id="1070200" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -193,7 +193,7 @@ rejected</sub_options>
     <phrase title="aed_detectiontype_login" version_id="1070000" version_string="1.7.0"><![CDATA[login]]></phrase>
     <phrase title="aed_detectiontype_register" version_id="1070000" version_string="1.7.0"><![CDATA[registration]]></phrase>
     <phrase title="aed_detection_method_cookie" version_id="10500" version_string="1.5.0"><![CDATA[Cookie]]></phrase>
-    <phrase title="aed_detection_method_ip" version_id="10500" version_string="1.5.0"><![CDATA[Ip]]></phrase>
+    <phrase title="aed_detection_method_ip" version_id="1070200" version_string="1.7.2"><![CDATA[Ip {ip}]]></phrase>
     <phrase title="aed_detectspamreg_accept" version_id="10500" version_string="1.5.0"><![CDATA[Accepting, Alter Ego - {method} - Username: {username}, UserId: {user_id}]]></phrase>
     <phrase title="aed_detectspamreg_group_membership" version_id="10500" version_string="1.5.0"><![CDATA[Alter Ego is a member of the following groups: {groups}]]></phrase>
     <phrase title="aed_detectspamreg_is_banned" version_id="10500" version_string="1.5.0"><![CDATA[Alter Ego {username} is banned.]]></phrase>
