@@ -81,7 +81,11 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
         {
             $report['extraContent'] = $this->prepareExtraContent($contentInfo);
         }
-        $users = $report['extraContent'][0];
+        $users = @$report['extraContent'][0];
+        if (empty($users) || !is_array($users))
+        {
+            $users = array();
+        }
         foreach($users as &$user)
         {
             if (!isset($user['username']))
@@ -95,9 +99,17 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
         }
 
         $AE_count = count($users) - 1;
-        $username1 = $users[0]['username'];
+        $username1 = @$users[0]['username'];
         $detectionType = empty($users[0]['detectionType']) ? '' : $users[0]['detectionType'];
-        if ($AE_count <= 1)
+        if ($AE_count <= 0)
+        {
+            return new XenForo_Phrase('aed_thread_subject_count', array(
+                'username' => 'Guest',
+                'count' => 0,
+                'detectionType' => $detectionType,
+            ));
+        }
+        else if ($AE_count == 1)
         {
             $username2 = $users[1]['username'];
             return new XenForo_Phrase('aed_thread_subject', array(
@@ -107,11 +119,13 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
             ));
         }
         else
+        {
             return new XenForo_Phrase('aed_thread_subject_count', array(
                 'username' => $username1,
                 'count' => $AE_count,
                 'detectionType' => $detectionType,
             ));
+        }
     }
 
     protected $_spamPreventionModel = null;
