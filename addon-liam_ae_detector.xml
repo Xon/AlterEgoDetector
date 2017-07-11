@@ -215,7 +215,7 @@ rejected</sub_options>
     <phrase title="aed_thread_subject" version_id="10406" version_string="1.4.6"><![CDATA[{username1} & {username2} are alter egos!]]></phrase>
     <phrase title="aed_thread_subject_count" version_id="10408" version_string="1.4.8"><![CDATA[{username} has {count} alter egos!]]></phrase>
     <phrase title="aed_user_id_not_found" version_id="10412" version_string="1.4.12"><![CDATA[The User Id {UserId} is not valid.]]></phrase>
-    <phrase title="altergo" version_id="1070300" version_string="1.7.3"><![CDATA[Alter Ego]]></phrase>
+    <phrase title="alterego" version_id="1070300" version_string="1.7.3"><![CDATA[Alter Ego]]></phrase>
     <phrase title="liam_aed_check_ips_up_to" version_id="10306" version_string="1.3.6"><![CDATA[Check IP's up to]]></phrase>
     <phrase title="liam_aed_ipcheck" version_id="10306" version_string="1.3.6"><![CDATA[Check IP's]]></phrase>
     <phrase title="option_aedcheckbanned" version_id="10201" version_string="1.2.1"><![CDATA[Check Banned Users]]></phrase>
