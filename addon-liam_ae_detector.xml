@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.3" version_id="1070300" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.4" version_id="1070400" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -209,9 +209,6 @@ rejected</sub_options>
     <phrase title="aed_thread_message_user_detection" version_id="10500" version_string="1.5.0"><![CDATA[@{username}, Triggered detection methods: 
 {methods}
 ]]></phrase>
-    <phrase title="aed_thread_message_user_detection_single" version_id="10500" version_string="1.5.0"><![CDATA[Triggered detection methods: 
-{methods}]]></phrase>
-    <phrase title="aed_thread_message_user_single" version_id="10500" version_string="1.5.0"><![CDATA[]]></phrase>
     <phrase title="aed_thread_subject" version_id="10406" version_string="1.4.6"><![CDATA[{username1} & {username2} are alter egos!]]></phrase>
     <phrase title="aed_thread_subject_count" version_id="10408" version_string="1.4.8"><![CDATA[{username} has {count} alter egos!]]></phrase>
     <phrase title="aed_user_id_not_found" version_id="10412" version_string="1.4.12"><![CDATA[The User Id {UserId} is not valid.]]></phrase>

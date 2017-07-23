@@ -493,8 +493,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $phrase = $ReportDetectionMethod
                   ? 'aed_thread_message_user_detection'
                   : 'aed_thread_message_user';
-        $prepend = $isSingle ? '_single' : '';
-        return new XenForo_Phrase($phrase . $prepend, array(
+        return new XenForo_Phrase($phrase, array(
             'username' => $user['username'],
             'userLink' => XenForo_Link::buildPublicLink('full:members', $user),
             'methods' => $methods,
