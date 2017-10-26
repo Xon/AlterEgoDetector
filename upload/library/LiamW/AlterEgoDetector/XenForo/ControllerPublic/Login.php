@@ -25,7 +25,8 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_A
         {
             $spamModel = $this->_getSpamPreventionModel();
             $cookie = $spamModel->getCookieValue();
-            $currentUserId = XenForo_Visitor::getInstance()->getUserId();
+            $visitor = XenForo_Visitor::getInstance();
+            $currentUserId = $visitor->getUserId();
             if (!$currentUserId)
             {
                 /* @var $session XenForo_Session */
@@ -34,11 +35,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_A
                 return $response;
             }
 
-            $currentUser = $this->_getUserModel()->getUserById($currentUserId, array(
-                'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
-            ));
-            $currentUser['permissions'] = XenForo_Permission::unserializePermissions($currentUser['global_permission_cache']);
-
+            $currentUser = $visitor->toArray();
             $detect_methods = $spamModel->detectAlterEgo($currentUser, $cookie);
             if ($detect_methods)
             {
