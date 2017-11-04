@@ -17,20 +17,32 @@
  */
 class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention
 {
+    /**
+     * @param int $userId
+     * @return int
+     */
     public function aed_getLangaugeForUser($userId)
     {
         if (empty($userId))
         {
             $language = XenForo_Visitor::getInstance()->getLanguage();
+
             return $language['language_id'];
         }
-        return $this->_getDb()->fetchOne('
+
+        return $this->_getDb()->fetchOne(
+            '
             SELECT language_id
             FROM xf_user
             WHERE user_id = ?
-        ', $userId);
+        ', $userId
+        );
     }
 
+    /**
+     * @param int $newLanguageId
+     * @return int
+     */
     public function aed_setLangauge($newLanguageId)
     {
         $visitor = XenForo_Visitor::getInstance();
@@ -47,7 +59,12 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $language['language_id'];
     }
 
-    public function aed_logScore($phrase, $score, $data = array())
+    /**
+     * @param string     $phrase
+     * @param string|int $score
+     * @param array      $data
+     */
+    public function aed_logScore($phrase, $score, $data = [])
     {
         $data['reason'] = $phrase;
 
@@ -61,21 +78,26 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         $data['method'] = empty($data['detection_method'])
-                          ? new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_COOKIE)
-                          : $data['detection_method'];
+            ? new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_COOKIE)
+            : $data['detection_method'];
 
-        $this->_resultDetails[] = array(
+        $this->_resultDetails[] = [
             'phrase' => $phrase,
-            'data' => $data
-        );
+            'data'   => $data
+        ];
     }
 
+    /**
+     * @param string $action
+     * @param string $newAction
+     */
     public function _updateRegAction(&$action, $newAction)
     {
-        switch($action)
+        switch ($action)
         {
             case XenForo_Model_SpamPrevention::RESULT_DENIED:
                 break;
+            /** @noinspection PhpMissingBreakStatementInspection */
             case XenForo_Model_SpamPrevention::RESULT_MODERATED:
                 if ($newAction != XenForo_Model_SpamPrevention::RESULT_DENIED)
                 {
@@ -87,6 +109,11 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
     }
 
+    /**
+     * @param array                        $user
+     * @param Zend_Controller_Request_Http $request
+     * @return string
+     */
     public function allowRegistration(array $user, Zend_Controller_Request_Http $request)
     {
         $result = parent::allowRegistration($user, $request);
@@ -100,18 +127,18 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             $aeduserid = $options->aeduserid;
             if (empty($aeduserid))
             {
-                return  $result;
+                return $result;
             }
             $registration_mode = $options->aedregistrationmode;
             $registration_mode_group = $options->aedregistrationmode_group;
             $special_group_ids = $options->aedregistrationmode_group_ids;
             if ($special_group_ids)
             {
-                $special_group_ids = explode(",",$special_group_ids);
+                $special_group_ids = explode(",", $special_group_ids);
             }
             else
             {
-                $special_group_ids = array();
+                $special_group_ids = [];
             }
 
             // $user['user_id'] && $visitor->getUserId(); are current empty at this stage
@@ -130,19 +157,18 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             if ($this->detect_methods)
             {
                 $this->_debug('Potential Alter Ego Detected.');
-                foreach($this->detect_methods as $detect_method)
+                foreach ($this->detect_methods as $detect_method)
                 {
                     $ae_action = $registration_mode;
                     if ($detect_method['suppress'])
                     {
                         continue;
                     }
-                    $alter_ego_info = array
-                    (
+                    $alter_ego_info = [
                         'detection_method' => $detect_method['method'],
-                        'username' => $detect_method['user']['username'],
-                        'user_id' => $detect_method['user']['user_id'],
-                    );
+                        'username'         => $detect_method['user']['username'],
+                        'user_id'          => $detect_method['user']['user_id'],
+                    ];
 
                     $is_banned = $detect_method['user']['is_banned'];
                     if ($is_banned)
@@ -153,7 +179,9 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     }
                     if ($registration_mode_group)
                     {
-                        $groups = $detect_method['user']['secondary_group_ids'] ? explode(',', $detect_method['user']['secondary_group_ids']) : array();
+                        $groups = $detect_method['user']['secondary_group_ids'] ? explode(
+                            ',', $detect_method['user']['secondary_group_ids']
+                        ) : [];
                         $groups[] = $detect_method['user']['user_group_id'];
                         $intersect = array_intersect($groups, $special_group_ids);
                         if ($intersect)
@@ -161,12 +189,13 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                             $ae_action = $registration_mode_group;
                             $this->_debug('forcing ae action - group intersect');
 
-                            $group_list = $this->_getHelper()->prepareField(array
-                            (
-                                'old_value' => '',
-                                'new_value' => join(',', $intersect),
-                                'field' => 'secondary_group_ids',
-                            ));
+                            $group_list = $this->_getHelper()->prepareField(
+                                [
+                                    'old_value' => '',
+                                    'new_value' => join(',', $intersect),
+                                    'field'     => 'secondary_group_ids',
+                                ]
+                            );
 
                             $alter_ego_info['groups'] = $group_list['new_value'];
                             $this->aed_logScore('aed_detectspamreg_group_membership', 0, $alter_ego_info);
@@ -195,17 +224,24 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             $this->_updateRegAction($result, $action);
             $this->_lastResult = $result;
         }
-        catch(Exception $e)
+        catch (Exception $e)
         {
             // do not block login if any sort of error occurs
             XenForo_Error::logException($e, false);
         }
+
         return $result;
     }
 
     var $detect_methods = null;
 
-    public function PostRegistrationAlterEgoDetection(XenForo_ControllerResponse_View $response, array $user, array $extraParams = array())
+    /**
+     * @param XenForo_ControllerResponse_View $response
+     * @param array                           $user
+     * @param array                           $extraParams
+     * @return XenForo_ControllerResponse_View
+     */
+    public function PostRegistrationAlterEgoDetection(XenForo_ControllerResponse_View $response, array $user, array $extraParams = [])
     {
         if (empty($this->detect_methods))
         {
@@ -222,20 +258,31 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $response;
     }
 
-
+    /**
+     * @param string|int $cookie
+     * @return string|int
+     */
     public function alterEgoCookieToUser($cookie)
     {
         return $cookie;
     }
 
+    /**
+     * @param string|int $userId
+     * @return string|int
+     */
     public function userToAlterEgoCookie($userId)
     {
         return $userId;
     }
 
+    /**
+     * @param XenForo_Session|null $session
+     * @return array
+     */
     protected function aed_getLoginAsUserIds(XenForo_Session $session = null)
     {
-        $loginAsUserIds = array();
+        $loginAsUserIds = [];
         if ($session)
         {
             // https://xenforo.com/community/resources/login-as-user.2493/
@@ -249,9 +296,15 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $loginAsUserIds[] = $session->get('loggedInAs');
             }
         }
+
         return $loginAsUserIds;
     }
 
+    /**
+     * @param string $ip
+     * @return array
+     * @throws XenForo_Exception
+     */
     protected function _getIpRecord($ip)
     {
         $results = XenForo_Helper_Ip::parseIpRangeString($ip);
@@ -260,14 +313,17 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_ip_or_ip_range'), true);
         }
 
-        return array(
+        return [
             $results['printable'],
             $results['binary'][0],
             $results['startRange'],
             $results['endRange']
-        );
+        ];
     }
 
+    /**
+     * @return bool
+     */
     protected function aed_ipWhiteListed()
     {
         $this->_debug('Checking IP whitelist');
@@ -281,49 +337,63 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         {
             return false;
         }
-        $this->_debug('ranges to check: '. var_export($whitelistedIPs, true));
+        $this->_debug('ranges to check: ' . var_export($whitelistedIPs, true));
         $binaryIp = XenForo_Helper_Ip::getBinaryIp();
         foreach ($whitelistedIPs as $ip)
         {
             list($niceIp, $firstByte, $startRange, $endRange) = $this->_getIpRecord($ip);
             if (XenForo_Helper_Ip::ipMatchesRange($binaryIp, $startRange, $endRange))
             {
-                $this->_debug('Whitelisted IP, matches:'.$niceIp);
+                $this->_debug('Whitelisted IP, matches:' . $niceIp);
+
                 return true;
             }
         }
         $this->_debug('Not whitelisted');
+
         return false;
     }
 
+    /**
+     * @param string $ip
+     * @param int    $timeLimit
+     * @return array
+     */
     public function _getUsersByIp($ip, $timeLimit)
     {
         if (!$ip)
         {
-            return array();
+            return [];
         }
 
         $ip = XenForo_Helper_Ip::convertIpStringToBinary($ip);
         if (!$ip)
         {
-            return array();
+            return [];
         }
 
-        return $this->fetchAllKeyed('
+        return $this->fetchAllKeyed(
+            '
             SELECT user.*, a.ip, a.log_date, permission_combination.cache_value AS global_permission_cache
             FROM (
-                select user_id, ip, max(log_date) as log_date
+                SELECT user_id, ip, max(log_date) AS log_date
                 FROM xf_ip AS ip
-                WHERE ip.ip = ? and log_date >= ?
+                WHERE ip.ip = ? AND log_date >= ?
                 GROUP BY ip.user_id
             ) a
             INNER JOIN xf_user AS user ON (user.user_id = a.user_id)
             LEFT JOIN xf_permission_combination AS permission_combination ON (permission_combination.permission_combination_id = user.permission_combination_id)
             ORDER BY user.user_id
-        ', 'user_id', array($ip,  XenForo_Application::$time - $timeLimit * 60));
+        ', 'user_id', [$ip, XenForo_Application::$time - $timeLimit * 60]
+        );
     }
 
 
+    /**
+     * @param array  $currentUser
+     * @param string $cookie
+     * @return array
+     */
     public function detectAlterEgo($currentUser, $cookie)
     {
         // Disable alter-ego checking if Login As User is detected.
@@ -331,25 +401,30 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $loginAsUserIds = $this->aed_getLoginAsUserIds($session);
         if ($loginAsUserIds)
         {
-            $this->_debug('Detected Login-as-user. Disabling alter-ego checking. Original User IDs:'. var_export($loginAsUserIds, true));
-            return array();
+            $this->_debug(
+                'Detected Login-as-user. Disabling alter-ego checking. Original User IDs:' . var_export(
+                    $loginAsUserIds, true
+                )
+            );
+
+            return [];
         }
 
         $this->_debug('Detecting alter-egos');
-        $detect_methods = array();
+        $detect_methods = [];
         $options = XenForo_Application::getOptions();
         $matching_mode = $options->aed_matching_mode;
 
         // $user['user_id'] && $visitor->getUserId(); may be empty at this stage
         $currentUserId = empty($currentUser['user_id'])
-                        ? 0
-                        : $currentUser['user_id'];
+            ? 0
+            : $currentUser['user_id'];
         $bypassChecks = empty($currentUser['permissions'])
-                        ? false
-                        : XenForo_Permission::hasPermission($currentUser['permissions'], 'general', 'aedbypass');
+            ? false
+            : XenForo_Permission::hasPermission($currentUser['permissions'], 'general', 'aedbypass');
 
         $currentUserCookie = $this->userToAlterEgoCookie($currentUserId);
-        $this->_debug('Resolving user_id:'. $currentUserId .' to cookie:' .$currentUserCookie);
+        $this->_debug('Resolving user_id:' . $currentUserId . ' to cookie:' . $currentUserCookie);
 
         // skip all alter-ego checks depending on options
         $checkBanned = $options->aedcheckbanned;
@@ -364,22 +439,23 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         if ($cookie && $cookie != $currentUserCookie)
         {
             $cookie_user_id = $this->alterEgoCookieToUser($cookie);
-            $this->_debug('Resolving cookie:'. $cookie .' to user_id:' .$cookie_user_id);
+            $this->_debug('Resolving cookie:' . $cookie . ' to user_id:' . $cookie_user_id);
             // AE DETECTED
-            $originalUser = $userModel->getUserById($cookie_user_id, array(
-                'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
-            ));
+            $originalUser = $userModel->getUserById(
+                $cookie_user_id, [
+                                   'join' => XenForo_Model_User::FETCH_USER_PERMISSIONS
+                               ]
+            );
             if ($originalUser && isset($originalUser['user_id']))
             {
                 $permissions = XenForo_Permission::unserializePermissions($originalUser['global_permission_cache']);
                 $bypassCheck_cookie = XenForo_Permission::hasPermission($permissions, 'general', 'aedbypass');
-                $detect_methods[] = array
-                (
+                $detect_methods[] = [
                     'suppress' => $bypassChecks || (!$checkBanned && $originalUser['is_banned']) || $bypassCheck_cookie,
-                    'method' => new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_COOKIE),
-                    'user' => $originalUser,
-                );
-                $this->_debug('Cookie detection method triggered for: '. $originalUser['username']);
+                    'method'   => new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_COOKIE),
+                    'user'     => $originalUser,
+                ];
+                $this->_debug('Cookie detection method triggered for: ' . $originalUser['username']);
             }
             else
             {
@@ -393,8 +469,10 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         {
             $this->_debug('Checking IP');
             $users = $this->_getUsersByIp($_SERVER['REMOTE_ADDR'], $ipOption['minTime']);
-            $ipPhrase = new XenForo_Phrase(LiamW_AlterEgoDetector_Globals::DETECT_METHOD_IP, array('ip' => $_SERVER['REMOTE_ADDR']));
-            $this->_debug(count($users) .' users with IP '.$_SERVER['REMOTE_ADDR'].', Checking for freshness...');
+            $ipPhrase = new XenForo_Phrase(
+                LiamW_AlterEgoDetector_Globals::DETECT_METHOD_IP, ['ip' => $_SERVER['REMOTE_ADDR']]
+            );
+            $this->_debug(count($users) . ' users with IP ' . $_SERVER['REMOTE_ADDR'] . ', Checking for freshness...');
             foreach ($users as &$originalUser)
             {
                 if ($currentUserId && $originalUser['user_id'] == $currentUserId)
@@ -409,13 +487,12 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
                 $permissions = XenForo_Permission::unserializePermissions($originalUser['global_permission_cache']);
                 $bypassCheck_ip = XenForo_Permission::hasPermission($permissions, 'general', 'aedbypass');
-                $detect_methods[] = array
-                (
+                $detect_methods[] = [
                     'suppress' => $bypassChecks || (!$checkBanned && $originalUser['is_banned']) || $bypassCheck_ip,
-                    'method' => $ipPhrase,
-                    'user' => $originalUser,
-                );
-                $this->_debug('IP detection method triggered for: '. $originalUser['username']);
+                    'method'   => $ipPhrase,
+                    'user'     => $originalUser,
+                ];
+                $this->_debug('IP detection method triggered for: ' . $originalUser['username']);
             }
         }
 
@@ -426,7 +503,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 $this->_debug('first time cookie deployment');
                 $this->setCookieValue($currentUserCookie, $options->aed_cookie_lifespan * 2592000);
             }
-            else if ($options->aedredeploycookie && $cookie != $currentUserCookie )
+            else if ($options->aedredeploycookie && $cookie != $currentUserCookie)
             {
                 $this->_debug('Redeploying cookie');
                 $this->setCookieValue($currentUserCookie, $options->aed_cookie_lifespan * 2592000);
@@ -434,7 +511,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         // resolve any phrases
-        foreach($detect_methods as &$detect_method)
+        foreach ($detect_methods as &$detect_method)
         {
             $detect_method['method'] = (string)$detect_method['method'];
         }
@@ -449,8 +526,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             }
             if ($detectionMethods > 1)
             {
-                $uniqueMethods = array();
-                foreach($detect_methods as $detect_method)
+                $uniqueMethods = [];
+                foreach ($detect_methods as $detect_method)
                 {
                     if ($detect_method['suppress'] || empty($detect_method['method']))
                     {
@@ -464,7 +541,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                 if (count($uniqueMethods) != $detectionMethods)
                 {
                     $this->_debug('AND matching method, skipping only match 1 reporting method');
-                    $detect_methods = array();
+                    $detect_methods = [];
                 }
             }
         }
@@ -472,6 +549,13 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $detect_methods;
     }
 
+    /**
+     * @param array      $user
+     * @param array|null $detection_methods
+     * @param string     $ReportDetectionMethod
+     * @param bool       $isSingle
+     * @return string|XenForo_Phrase
+     */
     public function buildUserDetectionReport(array $user, array $detection_methods = null, $ReportDetectionMethod, $isSingle)
     {
         if (empty($detection_methods))
@@ -480,7 +564,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         $methods = '';
-        foreach($detection_methods as $detect_method)
+        foreach ($detection_methods as $detect_method)
         {
             $methods .= "- " . $detect_method['method'] . "\n";
         }
@@ -491,15 +575,24 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         $phrase = $ReportDetectionMethod
-                  ? 'aed_thread_message_user_detection'
-                  : 'aed_thread_message_user';
-        return new XenForo_Phrase($phrase, array(
+            ? 'aed_thread_message_user_detection'
+            : 'aed_thread_message_user';
+
+        return new XenForo_Phrase(
+            $phrase, [
             'username' => $user['username'],
             'userLink' => XenForo_Link::buildPublicLink('full:members', $user),
-            'methods' => $methods,
-        ), false);
+            'methods'  => $methods,
+        ], false
+        );
     }
 
+    /**
+     * @param array       $alterEgoUser
+     * @param array       $users
+     * @param string|null $detectionType
+     * @return string|XenForo_Phrase
+     */
     public function buildUserDetectionReportBody(array $alterEgoUser, array $users, $detectionType = null)
     {
         $ReportDetectionMethod = XenForo_Application::getOptions()->aedshowdetectionmethods;
@@ -509,26 +602,30 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         if ($isSingle)
         {
             $otherUser = reset($users);
-            $message = new XenForo_Phrase('aed_thread_message_single', array(
-                'username1' => $alterEgoUser['username'],
-                'userLink1' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser),
-                'username2' => $otherUser['username'],
-                'userLink2' => XenForo_Link::buildPublicLink('full:members', $otherUser),
+            $message = new XenForo_Phrase(
+                'aed_thread_message_single', [
+                'username1'     => $alterEgoUser['username'],
+                'userLink1'     => XenForo_Link::buildPublicLink('full:members', $alterEgoUser),
+                'username2'     => $otherUser['username'],
+                'userLink2'     => XenForo_Link::buildPublicLink('full:members', $otherUser),
                 'detectionType' => $detectionType,
-            ), false);
+            ], false
+            );
         }
         else
         {
-            $message = new XenForo_Phrase('aed_thread_message', array(
-                'username' => $alterEgoUser['username'],
-                'userLink' => XenForo_Link::buildPublicLink('full:members', $alterEgoUser),
+            $message = new XenForo_Phrase(
+                'aed_thread_message', [
+                'username'      => $alterEgoUser['username'],
+                'userLink'      => XenForo_Link::buildPublicLink('full:members', $alterEgoUser),
                 'detectionType' => $detectionType,
-            ), false);
+            ], false
+            );
         }
         $message .= "\n\n";
-        foreach($users as $user)
+        foreach ($users as $user)
         {
-            $detection_methods = array();
+            $detection_methods = [];
             if (isset($user['detection_methods']))
             {
                 $detection_methods = $user['detection_methods'];
@@ -543,6 +640,12 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         return $message;
     }
 
+    /**
+     * @param array $alterEgoUser
+     * @param array $detect_methods
+     * @param null  $detectionType
+     * @throws Exception
+     */
     public function processAlterEgoDetection($alterEgoUser, array $detect_methods, $detectionType = null)
     {
         $this->_debug('Reporting alter-egos');
@@ -572,9 +675,9 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         unset($alterEgoUser['global_permission_cache']);
         $reportedUser = $alterEgoUser;
         $reportedUserId = $reportedUser['user_id'];
-        $users = array();
+        $users = [];
         // ensure consistent ordering by picking a user as 'first'
-        foreach($detect_methods as $detect_method)
+        foreach ($detect_methods as $detect_method)
         {
             if ($detect_method['suppress'])
             {
@@ -592,7 +695,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             }
             $user = $users[$userId];
 
-            $arr = array();
+            $arr = [];
             if (!empty($user['detection_methods']))
             {
                 $arr = $user['detection_methods'];
@@ -621,16 +724,21 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         $username = $options->aedusername;
         if (empty($userId))
         {
-            XenForo_Error::logException(new Exception("Alter Ego Detector - UserId not set. Aborting reporting alter egos"), false);
+            XenForo_Error::logException(
+                new Exception("Alter Ego Detector - UserId not set. Aborting reporting alter egos"), false
+            );
+
             return;
         }
         if (empty($username))
         {
-            $username = $this->_getDb()->fetchOne('
+            $username = $this->_getDb()->fetchOne(
+                '
                 SELECT username
                 FROM xf_user
                 WHERE user_id = ?
-            ', $userId);
+            ', $userId
+            );
         }
         $oldlanguage_id = $this->aed_setLangauge($this->aed_getLangaugeForUser($userId));
         try
@@ -638,24 +746,28 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             $originalUsername = $reportedUser['username'];
             $user = reset($users);
             $alterEgoUsername = $reportedUser['user_id'] != $alterEgoUser['user_id']
-                                ? $alterEgoUser['username']
-                                : $user['username'];
+                ? $alterEgoUser['username']
+                : $user['username'];
             // build the title
             if ($AE_count == 1)
             {
-                $title = new XenForo_Phrase('aed_thread_subject', array(
-                    'username1' => $originalUsername,
-                    'username2' => $alterEgoUsername,
+                $title = new XenForo_Phrase(
+                    'aed_thread_subject', [
+                    'username1'     => $originalUsername,
+                    'username2'     => $alterEgoUsername,
                     'detectionType' => $detectionType,
-                ), false);
+                ], false
+                );
             }
             else
             {
-                $title = new XenForo_Phrase('aed_thread_subject_count', array(
-                    'username' => $reportedUser['username'],
-                    'count' => $AE_count,
+                $title = new XenForo_Phrase(
+                    'aed_thread_subject_count', [
+                    'username'      => $reportedUser['username'],
+                    'count'         => $AE_count,
                     'detectionType' => $detectionType,
-                ), false);
+                ], false
+                );
             }
 
             $message = $this->buildUserDetectionReportBody($alterEgoUser, $users, $detectionType);
@@ -669,20 +781,24 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     $forum = $this->_getForumModel()->getForumById($forumId);
                     if (empty($forumId) || empty($userId) || empty($username) || empty($forum))
                     {
-                        throw new Exception("Alter Ego Detector - Create Thread is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername");
+                        throw new Exception(
+                            "Alter Ego Detector - Create Thread is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername"
+                        );
                     }
                     $default_prefix_id = $forum['default_prefix_id'];
 
                     $this->_debug('Initialised Thread DataWriter');
                     /* @var $threadDw XenForo_DataWriter_Discussion_Thread */
                     $threadDw = XenForo_DataWriter::create('XenForo_DataWriter_Discussion_Thread');
-                    $threadDw->bulkSet(array(
-                        'user_id' => $userId,
-                        'node_id' => $forumId,
-                        'title' => $title,
-                        'username' => $username,
-                        'prefix_id' => $default_prefix_id,
-                    ));
+                    $threadDw->bulkSet(
+                        [
+                            'user_id'   => $userId,
+                            'node_id'   => $forumId,
+                            'title'     => $title,
+                            'username'  => $username,
+                            'prefix_id' => $default_prefix_id,
+                        ]
+                    );
 
                     $firstPostDw = $threadDw->getFirstMessageDw();
                     $firstPostDw->setOption(XenForo_DataWriter_DiscussionMessage::OPTION_IS_AUTOMATED, true);
@@ -692,7 +808,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     $threadDw->save();
                     $this->_debug('Thread datawriter saved');
                 }
-                catch(\Exception $e)
+                catch (\Exception $e)
                 {
                     XenForo_Error::logException($e, false);
                 }
@@ -702,26 +818,36 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
             {
                 try
                 {
-                    $conversationRecipientsOption = str_replace(array(
-                        "\r",
-                        "\r\n"
-                    ), "\n", $options->aedpmrecipients);
+                    $conversationRecipientsOption = str_replace(
+                        [
+                            "\r",
+                            "\r\n"
+                        ], "\n", $options->aedpmrecipients
+                    );
                     $conversationRecipients = array_filter(explode("\n", $conversationRecipientsOption));
 
-                    $starterArray = $userModel->getFullUserById($userId, array(
-                        'join' => XenForo_Model_User::FETCH_USER_FULL | XenForo_Model_User::FETCH_USER_PERMISSIONS
-                    ));
+                    $starterArray = $userModel->getFullUserById(
+                        $userId, [
+                                   'join' => XenForo_Model_User::FETCH_USER_FULL | XenForo_Model_User::FETCH_USER_PERMISSIONS
+                               ]
+                    );
                     if (empty($starterArray) || empty($username) || empty($conversationRecipients))
                     {
-                        throw new Exception("Alter Ego Detector - Start PM is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername");
+                        throw new Exception(
+                            "Alter Ego Detector - Start PM is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername"
+                        );
                     }
-                    $starterArray['permissions'] = XenForo_Permission::unserializePermissions($starterArray['global_permission_cache']);
+                    $starterArray['permissions'] = XenForo_Permission::unserializePermissions(
+                        $starterArray['global_permission_cache']
+                    );
 
 
                     /* @var $conversationDw XenForo_DataWriter_ConversationMaster */
                     $this->_debug('Conversation datawriter initialised.');
                     $conversationDw = XenForo_DataWriter::create('XenForo_DataWriter_ConversationMaster');
-                    $conversationDw->setExtraData(XenForo_DataWriter_ConversationMaster::DATA_ACTION_USER, $starterArray);
+                    $conversationDw->setExtraData(
+                        XenForo_DataWriter_ConversationMaster::DATA_ACTION_USER, $starterArray
+                    );
                     $conversationDw->set('user_id', $userId);
                     $conversationDw->set('username', $username);
                     $conversationDw->set('title', $title);
@@ -737,7 +863,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     $conversationDw->save();
                     $this->_debug('Line after conversation save');
                 }
-                catch(\Exception $e)
+                catch (\Exception $e)
                 {
                     XenForo_Error::logException($e, false);
                 }
@@ -751,7 +877,9 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
 
                     if (empty($userId))
                     {
-                        throw new Exception("Alter Ego Detector - Start Report is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername");
+                        throw new Exception(
+                            "Alter Ego Detector - Start Report is not properly configured when reporting $alterEgoUsername is an alter ego of $originalUsername"
+                        );
                     }
 
                     /* @var $reportModel XenForo_Model_Report */
@@ -760,9 +888,9 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     $users[$reportedUser['user_id']] = $reportedUser;
                     $users[$alterEgoUser['user_id']] = $alterEgoUser;
                     $userIds = array_keys($users);
-                    $reportContent = array();
+                    $reportContent = [];
                     $reportContent[] = $reportedUser;
-                    foreach($users as $user)
+                    foreach ($users as $user)
                     {
                         if ($reportedUser['user_id'] == $user['user_id'])
                         {
@@ -774,7 +902,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     // ensure alter-ego detection doesn't nag
                     $makeReport = true;
                     $report = false;
-                    $newAlterEgos = array();
+                    $newAlterEgos = [];
                     // do not allow reporting of the alter ego reporter id
                     if ($userId != $reportedUser['user_id'] && $userId != $alterEgoUser['user_id'])
                     {
@@ -791,14 +919,16 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                         }
 
                         // update exiting users
-                        foreach($content_info['0'] as $key => $user)
+                        foreach ($content_info['0'] as $key => $user)
                         {
                             $_userid = $user['user_id'];
                             if (empty($users[$_userid]))
                             {
                                 continue;
                             }
-                            $this->_debug('updating alter ego report content for ' .$_userid .'- ' . $users[$_userid]['username']);
+                            $this->_debug(
+                                'updating alter ego report content for ' . $_userid . '- ' . $users[$_userid]['username']
+                            );
                             $content_info['0'][$key] = $users[$_userid];
                         }
 
@@ -808,14 +938,16 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                         $forceReport = false;
                         if ($userIds)
                         {
-                            foreach($userIds as $_userid)
+                            foreach ($userIds as $_userid)
                             {
                                 if (empty($users[$_userid]))
                                 {
-                                    $this->_debug('Can not find ' .$_userid );
+                                    $this->_debug('Can not find ' . $_userid);
                                     continue;
                                 }
-                                $this->_debug('Adding alter ego report content for ' .$_userid .'- ' . $users[$_userid]['username']);
+                                $this->_debug(
+                                    'Adding alter ego report content for ' . $_userid . '- ' . $users[$_userid]['username']
+                                );
                                 $content_info['0'][] = $users[$_userid];
                                 $forceReport = true;
                             }
@@ -844,22 +976,26 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
                     if ($makeReport)
                     {
                         $reportContent[0]['detectionType'] = (string)$detectionType;
-                        $this->_debug('Make report: ' . $makeReport . ' for '. $originalUsername. ' to report AE: '. $alterEgoUsername);
+                        $this->_debug(
+                            'Make report: ' . $makeReport . ' for ' . $originalUsername . ' to report AE: ' . $alterEgoUsername
+                        );
                         $message = XenForo_Helper_String::bbCodeStrip($message);
-                        $reportModel->reportContent('alterego', $reportContent, $message, $userModel->getFullUserById($userId));
+                        $reportModel->reportContent(
+                            'alterego', $reportContent, $message, $userModel->getFullUserById($userId)
+                        );
                     }
                     else
                     {
                         $this->_debug('Suppressing duplicate report.');
                     }
                 }
-                catch(\Exception $e)
+                catch (\Exception $e)
                 {
                     XenForo_Error::logException($e, false);
                 }
             }
         }
-        catch(\Exception $e)
+        catch (\Exception $e)
         {
             $this->aed_setLangauge($oldlanguage_id);
             throw $e;
@@ -889,8 +1025,8 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
     /**
      * Sets the AED cookie value.
      *
-     * @param     $value string|boolean The cookie false. False to remove cookie.
-     * @param int $time  int How long the cookie is valid for, in seconds.
+     * @param string|boolean $value The cookie false. False to remove cookie.
+     * @param int            $time  int How long the cookie is valid for, in seconds.
      */
     public function setCookieValue($value, $time = 31536000)
     {
@@ -906,11 +1042,17 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
     }
 
+    /**
+     * @return XenForo_Model_Forum|XenForo_Model
+     */
     protected function _getForumModel()
     {
         return $this->getModelFromCache('XenForo_Model_Forum');
     }
 
+    /**
+     * @return XenForo_Model_User|XenForo_Model
+     */
     protected function _getUserModel()
     {
         return $this->getModelFromCache('XenForo_Model_User');
@@ -920,10 +1062,13 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
     {
         if (XenForo_Application::getOptions()->aeddebugmessages)
         {
-            XenForo_Error::debug($message);
+            XenForo_Error::logException(new Exception($message), false);
         }
     }
 
+    /**
+     * @return XenForo_Helper_UserChangeLog
+     */
     protected function _getHelper()
     {
         return $this->getModelFromCache('XenForo_Helper_UserChangeLog');

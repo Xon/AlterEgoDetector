@@ -50,6 +50,9 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Login extends XFCP_LiamW_A
         return $response;
     }
 
+    /**
+     * @return XenForo_Model|LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention
+     */
     protected function _getSpamPreventionModel()
     {
         return $this->getModelFromCache('XenForo_Model_SpamPrevention');

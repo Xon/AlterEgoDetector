@@ -20,7 +20,9 @@ class LiamW_AlterEgoDetector_Option_UserId
             return true;
         }
 
-        $user = XenForo_Model::create("XenForo_Model_User")->getUserById($option);
+        /** @var XenForo_Model_User $userModel */
+        $userModel = XenForo_Model::create("XenForo_Model_User");
+        $user = $userModel->getUserById($option);
 
         if (!empty($user))
         {
@@ -30,10 +32,12 @@ class LiamW_AlterEgoDetector_Option_UserId
         if ($option == 1)
         {
             $option = '';
+
             return true;
         }
 
-        $dw->error(new XenForo_Phrase('aed_user_id_not_found', array('UserId' => $option), $fieldName));
+        $dw->error(new XenForo_Phrase('aed_user_id_not_found', ['UserId' => $option], $fieldName));
+
         return false;
     }
 }

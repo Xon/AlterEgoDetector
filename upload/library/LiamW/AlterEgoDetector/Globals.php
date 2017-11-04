@@ -5,7 +5,7 @@
 class LiamW_AlterEgoDetector_Globals
 {
     const DETECT_METHOD_COOKIE = "aed_detection_method_cookie";
-    const DETECT_METHOD_IP = "aed_detection_method_ip";
+    const DETECT_METHOD_IP     = "aed_detection_method_ip";
 
-    private function __construct() {}
+    private function __construct() { }
 }

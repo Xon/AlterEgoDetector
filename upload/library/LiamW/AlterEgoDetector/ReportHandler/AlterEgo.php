@@ -128,7 +128,12 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
         }
     }
 
+    /** @var LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention */
     protected $_spamPreventionModel = null;
+
+    /**
+     * @return LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention|XenForo_Model
+     */
     protected function _getSpamPreventionModel()
     {
         if (empty($this->_spamPreventionModel))

@@ -5,7 +5,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Register extends XFCP_Liam
     protected function _completeRegistration(array $user, array $extraParams = array())
     {
         $response = parent::_completeRegistration($user, $extraParams);
-        
+
         try
         {
             $spamModel = $this->_getSpamPreventionModel();
@@ -34,6 +34,9 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Register extends XFCP_Liam
         return $response;
     }
 
+    /**
+     * @return LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention|XenForo_Model
+     */
     protected function _getSpamPreventionModel()
     {
         return $this->getModelFromCache('XenForo_Model_SpamPrevention');
@@ -43,7 +46,7 @@ class LiamW_AlterEgoDetector_XenForo_ControllerPublic_Register extends XFCP_Liam
     {
         if (XenForo_Application::getOptions()->aeddebugmessages)
         {
-            XenForo_Error::debug($message);
+            XenForo_Error::logException(new Exception($message), false);
         }
     }
 }
