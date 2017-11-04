@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.4" version_id="1070400" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.5" version_id="1070500" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -39,6 +39,12 @@
       <edit_format_params></edit_format_params>
       <sub_options></sub_options>
       <relation group_id="aed_options" display_order="550"/>
+    </option>
+    <option option_id="aed_banned_logout" edit_format="onoff" data_type="boolean" can_backup="1">
+      <default_value>1</default_value>
+      <edit_format_params></edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="aed_options" display_order="20"/>
     </option>
     <option option_id="aed_cookie_lifespan" edit_format="spinbox" data_type="positive_integer" can_backup="1">
       <default_value>24</default_value>
@@ -249,6 +255,8 @@ If block is selected, registrations that have failed the AE check will be blocke
     <phrase title="option_aeduserid_explain" version_id="10500" version_string="1.5.0"><![CDATA[Enter the user id of the user which will be used to create notifications of an alter-ego. The language of this user will be used. This is required.]]></phrase>
     <phrase title="option_aedusername" version_id="1" version_string="1.0"><![CDATA[Username]]></phrase>
     <phrase title="option_aedusername_explain" version_id="10500" version_string="1.5.0"><![CDATA[Enter the username of the user which will be used to create notifications of an alter-ego. This is required.]]></phrase>
+    <phrase title="option_aed_banned_logout" version_id="1070500" version_string="1.7.5"><![CDATA[Allow banned logout]]></phrase>
+    <phrase title="option_aed_banned_logout_explain" version_id="1070500" version_string="1.7.5"><![CDATA[Allow banned users to logout to preserve the alter-ego tracking cookie]]></phrase>
     <phrase title="option_aed_cookie_lifespan" version_id="10405" version_string="1.4.5"><![CDATA[Cookie Lifespan]]></phrase>
     <phrase title="option_aed_cookie_lifespan_explain" version_id="10405" version_string="1.4.5"><![CDATA[The Lifespan of the cookie in months.]]></phrase>
     <phrase title="option_aed_ip_whitelist" version_id="1060200" version_string="1.6.2"><![CDATA[IP Whitelist]]></phrase>
