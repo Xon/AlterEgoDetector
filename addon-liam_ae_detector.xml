@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.5" version_id="1070500" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.6" version_id="1070600" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -212,7 +212,7 @@ rejected</sub_options>
     <phrase title="aed_thread_message_single" version_id="1070000" version_string="1.7.0"><![CDATA[On {detectionType}, it looks like @{username2} is an alter ego of @{username1}...]]></phrase>
     <phrase title="aed_thread_message_user" version_id="10500" version_string="1.5.0"><![CDATA[@{username}
 ]]></phrase>
-    <phrase title="aed_thread_message_user_detection" version_id="10500" version_string="1.5.0"><![CDATA[@{username}, Triggered detection methods: 
+    <phrase title="aed_thread_message_user_detection" version_id="10500" version_string="1.5.0"><![CDATA[@{username}, Triggered detection methods:
 {methods}
 ]]></phrase>
     <phrase title="aed_thread_subject" version_id="10406" version_string="1.4.6"><![CDATA[{username1} & {username2} are alter egos!]]></phrase>
@@ -310,7 +310,7 @@ $1$2
 		<div class="member">
 			<xen:if is="{$user.user_id}">
 				<h3 class="username"><xen:username user="$user" rich="true" /></h3>
-				
+
 				<div class="userInfo">
 					<div class="userBlurb dimmed">{xen:helper userBlurb, $user}</div>
 					<dl class="userStats pairsInline">
@@ -318,7 +318,7 @@ $1$2
 						<dt title="{xen:phrase number_of_times_something_posted_by_x_has_been_liked, 'name={$user.username}'}">{xen:phrase likes_received}:</dt> <dd>{xen:number $user.like_count}</dd>
 						<dt>{xen:phrase trophy_points}:</dt> <dd title="{xen:phrase trophy_points}">{xen:number $user.trophy_points}</dd>
 					</dl>
-				</div>	
+				</div>
 			<xen:else />
 				<h3 class="username guest dimmed">{xen:phrase guest}</h3>
 			</xen:if>

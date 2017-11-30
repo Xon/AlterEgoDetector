@@ -56,22 +56,29 @@ class LiamW_AlterEgoDetector_ReportHandler_AlterEgo extends XenForo_ReportHandle
         {
             $report['extraContent'] = $this->prepareExtraContent($contentInfo);
         }
-        $users = $report['extraContent'][0];
-        foreach($users as &$user)
-        {
-            if (!isset($user['username']))
-            {
-                $user['username'] = 'guest';
-            }
-            if (!isset($user['user_id']))
-            {
-                $user['user_id'] = 0;
-            }
-        }
-
         $content = parent::getContentForThread($report, $contentInfo);
 
-        $content['message'] = $this->_getSpamPreventionModel()->buildUserDetectionReportBody($users[0], array_slice($users, 1));
+        $users = @$report['extraContent'][0];
+        if (empty($users) || !is_array($users))
+        {
+            $users = array();
+        }
+        if ($users)
+        {
+            foreach($users as &$user)
+            {
+                if (!isset($user['username']))
+                {
+                    $user['username'] = 'guest';
+                }
+                if (!isset($user['user_id']))
+                {
+                    $user['user_id'] = 0;
+                }
+            }
+            $content['message'] = $this->_getSpamPreventionModel()->buildUserDetectionReportBody($users[0], array_slice($users, 1));
+        }
+
         return $content;
     }
 
