@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.6" version_id="1070600" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="liam_ae_detector" title="Alter Ego Detector" version_string="1.7.7" version_id="1070700" url="https://xenforo.com/community/resources/alter-ego-detector.2405" install_callback_class="LiamW_AlterEgoDetector_Installer" install_callback_method="install" uninstall_callback_class="LiamW_AlterEgoDetector_Installer" uninstall_callback_method="uninstall">
   <admin_navigation/>
   <admin_permissions/>
   <admin_style_properties/>
@@ -24,6 +24,7 @@
   <code_events/>
   <code_event_listeners>
     <listener event_id="load_class_controller" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Login" description="XenForo_ControllerPublic_Login"/>
+    <listener event_id="load_class_controller" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Logout" description="XenForo_ControllerPublic_Logout"/>
     <listener event_id="load_class_controller" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_ControllerPublic_Register" description="XenForo_ControllerPublic_Register"/>
     <listener event_id="load_class_model" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_Model_UserConfirmation" description="XenForo_Model_UserConfirmation"/>
     <listener event_id="load_class_model" execute_order="2405" callback_class="LiamW_AlterEgoDetector_Listener" callback_method="load_class" active="1" hint="XenForo_Model_SpamPrevention" description="XenForo_Model_SpamPrevention"/>
