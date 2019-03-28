@@ -361,6 +361,12 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
      */
     public function _getUsersByIp($ip, $timeLimit)
     {
+        $timeLimit = intval($timeLimit);
+        if ($timeLimit <= 0)
+        {
+            return [];
+        }
+
         if (!$ip)
         {
             return [];
@@ -465,7 +471,7 @@ class LiamW_AlterEgoDetector_XenForo_Model_SpamPrevention extends XFCP_LiamW_Alt
         }
 
         $ipOption = $options->aedcheckips;
-        if ($ipOption['checkIp'] && !$this->aed_ipWhiteListed())
+        if (isset($ipOption['checkIp']) && isset($ipOption['minTime']) && !$this->aed_ipWhiteListed())
         {
             $this->_debug('Checking IP');
             $users = $this->_getUsersByIp($_SERVER['REMOTE_ADDR'], $ipOption['minTime']);
